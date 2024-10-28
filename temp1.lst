@@ -1,0 +1,44 @@
+     1                                  [org 100h]
+     2 00000000 B800B8                  mov ax,0xb800
+     3 00000003 8EC0                    mov es,ax
+     4 00000005 8ED8                    mov ds,ax
+     5                                  
+     6                                  
+     7                                  ;----------------12 lines---------------------;
+     8                                  outer:
+     9 00000007 B90D00                      mov cx, 13           ; Loop for 13 rows
+    10                                  
+    11                                  inner:
+    12 0000000A 51                          push cx              ; Save outer loop counter
+    13                                  
+    14                                      ; Calculate DI and SI for this row
+    15 0000000B 83C301                      add bx, 1
+    16 0000000E B8A000                      mov ax, 160
+    17 00000011 F7E3                        mul bx               ; DI points to the start of the row
+    18 00000013 89C7                        mov di, ax
+    19 00000015 83E814                      sub ax, 20           ; Shift SI back for copying from the beginning
+    20 00000018 89C6                        mov si, ax
+    21 0000001A 83EF02                      sub di,2
+    22 0000001D 83EE02                      sub si,2
+    23                                      ; Copy 70 words in reverse alignment for each line
+    24 00000020 B94600                      mov cx, 70
+    25                                  l:
+    26 00000023 A5                          movsw                ; Copy word from DS:SI to ES:DI
+    27 00000024 83EF04                      sub di, 4            ; Move DI back for right alignment
+    28 00000027 83EE04                      sub si, 4            ; Move SI back to the previous word
+    29 0000002A E2F7                        loop l
+    30                                  
+    31                                      ; Clear line with spaces
+    32 0000002C 83EB01                      sub bx, 1
+    33 0000002F B8A000                      mov ax, 160
+    34 00000032 F7E3                        mul bx
+    35 00000034 B90A00                      mov cx, 10
+    36 00000037 89C7                        mov di, ax
+    37 00000039 B82007                      mov ax, 0x0720       ; Space character with gray color attribute
+    38 0000003C F3AB                        rep stosw
+    39                                  
+    40 0000003E 83C301                      add bx, 1
+    41 00000041 59                          pop cx               ; Restore outer loop counter
+    42 00000042 E2C6                        loop inner           ; Repeat for each row
+    43 00000044 B84C00                  mov ax,4ch
+    44 00000047 CD21                    int 21h

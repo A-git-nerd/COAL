@@ -1,0 +1,68 @@
+     1                                  [org 100h]
+     2                                  
+     3 00000000 EB55                    jmp start
+     4                                  SubTract:
+     5 00000002 55                      push bp
+     6 00000003 89E5                    mov bp,sp
+     7 00000005 8B5604                  mov dx,[bp+4]
+     8 00000008 8B4E06                  mov cx,[bp+6]
+     9 0000000B 8B5E08                  mov bx,[bp+8]
+    10 0000000E 8B460A                  mov ax,[bp+10]
+    11                                  
+    12 00000011 29D8                    sub ax,bx
+    13 00000013 29C8                    sub ax,cx
+    14 00000015 29D0                    sub ax,dx
+    15                                  
+    16 00000017 89460C                  mov word [bp+12],ax
+    17 0000001A 89EC                    mov sp,bp
+    18 0000001C 5D                      pop bp
+    19                                  
+    20 0000001D C20800                  ret 8
+    21                                  Func:
+    22 00000020 55                      push bp
+    23 00000021 89E5                    mov bp,sp
+    24 00000023 83EC04                  sub sp,4 ; making l1 and l2
+    25                                  
+    26 00000026 FF7604                  push word [bp+4]
+    27 00000029 FF7606                  push word [bp+6]
+    28 0000002C FF7608                  push word [bp+8]
+    29 0000002F FF760A                  push word [bp+10]
+    30                                  
+    31 00000032 E8CDFF                  call SubTract
+    32 00000035 8B46FC                  mov ax,[bp-4]
+    33 00000038 8946FE                  mov [bp-2],ax
+    34                                  
+    35 0000003B FF7608                  push word [bp+8]
+    36 0000003E FF760A                  push word [bp+10]
+    37 00000041 6A00                    push word 0
+    38 00000043 6A00                    push word 0
+    39 00000045 E8BAFF                  call SubTract
+    40                                  
+    41 00000048 8B46FE                  mov ax,[bp-2]
+    42 0000004B 0346FC                  add ax,[bp-4]
+    43                                  
+    44 0000004E 89460C                  mov word [bp+12],ax
+    45                                  
+    46 00000051 89EC                    mov sp,bp
+    47 00000053 5D                      pop bp
+    48 00000054 C20800                  ret 8
+    49                                  
+    50                                  start:
+    51 00000057 83EC02                  sub sp,2
+    52 0000005A B80A00                  mov ax,0xA
+    53 0000005D BB0100                  mov bx,0x1
+    54 00000060 B90200                  mov cx,0x2
+    55 00000063 BA0200                  mov dx,0x2
+    56 00000066 52                      push dx
+    57 00000067 51                      push cx
+    58 00000068 53                      push bx
+    59 00000069 50                      push ax
+    60                                  
+    61 0000006A E8B3FF                  call Func
+    62                                  
+    63 0000006D 5B                      pop bx
+    64                                  
+    65                                  
+    66                                  
+    67 0000006E B84C00                  mov ax,4ch
+    68 00000071 CD21                    int 21h

@@ -1,0 +1,47 @@
+     1                                  [org 100h]
+     2                                  
+     3 00000000 8A1E[4300]              mov bl, [multiplicand]  
+     4 00000004 8A16[4400]              mov dl, [multiplier]   
+     5                                  
+     6 00000008 B700                    mov bh, 0                
+     7 0000000A 88D8                    mov al, bl
+     8 0000000C C0F807                  sar al, 7                
+     9 0000000F 7904                    jns multiPositive 
+    10 00000011 F6DB                    neg bl                                  
+    11 00000013 F6D7                    not bh                   
+    12                                  
+    13                                  multiPositive: ;for multiplicand
+    14 00000015 88D0                     mov al, dl
+    15 00000017 C0F807                   sar al, 7              
+    16 0000001A 7907                     jns multipositive
+    17 0000001C F6D2                     not dl                 
+    18 0000001E 80C201                   add dl, 1              
+    19 00000021 F6D7                     not bh                
+    20                                  
+    21                                  multipositive: ;for multiplier
+    22 00000023 B104                     mov cl, 4              
+    23 00000025 B80000                   mov ax, 0             
+    24                                  
+    25                                  checkbit:
+    26 00000028 D0EA                    shr dl,1             
+    27 0000002A 7302                    jnc skip                 
+    28 0000002C 00D8                    add al, bl             
+    29                                  
+    30                                  skip:
+    31 0000002E D0E3                     shl bl, 1                          
+    32 00000030 FEC9                     dec cl                
+    33 00000032 75F4                     jnz checkbit           
+    34                                  
+    35 00000034 80FF00                   cmp bh, 0x00 
+    36 00000037 7402                     je termination    
+    37 00000039 F7D8                     neg ax            
+    38                                  
+    39                                  termination:
+    40 0000003B A3[4500]                mov [result], ax         
+    41                                  
+    42 0000003E B84C00                  mov ax, 4ch
+    43 00000041 CD21                    int 21h
+    44                                  
+    45 00000043 F3                      multiplicand: db -13        
+    46 00000044 05                      multiplier:   db 5        
+    47 00000045 0000                    result:      dw 0 

@@ -1,0 +1,36 @@
+2024-09-25 17:13:57  WM_QUERYENDSESSION (lParam: 0 - ordinary system shutdown/restart) =====================================
+2024-09-25 17:13:57  WM_ENDSESSION (wParam: TRUE, lParam: 0 - ordinary system shutdown/restart)
+2024-09-25 17:13:57  C:\CCL\Assembly Programming Tools\assemblytools\Notepad++Portable\Data\Config\config.xml is opened.
+2024-09-25 17:13:57  C:\CCL\Assembly Programming Tools\assemblytools\Notepad++Portable\Data\Config\config.xml  9236/9236 bytes are written.
+2024-09-25 17:13:57  C:\CCL\Assembly Programming Tools\assemblytools\Notepad++Portable\Data\Config\config.xml is closed.
+2024-09-25 17:13:57  C:\CCL\Assembly Programming Tools\assemblytools\Notepad++Portable\App\Notepad++64\session.xml is opened.
+2024-09-25 17:13:57  C:\CCL\Assembly Programming Tools\assemblytools\Notepad++Portable\App\Notepad++64\session.xml  8616/8616 bytes are written.
+2024-09-25 17:13:57  C:\CCL\Assembly Programming Tools\assemblytools\Notepad++Portable\App\Notepad++64\session.xml is closed.
+2024-09-25 17:13:57  WM_DESTROY (isEndSessionStarted == true)
+2024-10-03 22:19:55  WM_QUERYENDSESSION (lParam: 0 - ordinary system shutdown/restart) =====================================
+2024-10-03 22:19:55  WM_ENDSESSION (wParam: TRUE, lParam: 0 - ordinary system shutdown/restart)
+2024-10-03 22:19:55  C:\CCL\Assembly Programming Tools\assemblytools\Notepad++Portable\Data\Config\config.xml is opened.
+2024-10-03 22:19:55  C:\CCL\Assembly Programming Tools\assemblytools\Notepad++Portable\Data\Config\config.xml  9244/9244 bytes are written.
+2024-10-03 22:19:55  C:\CCL\Assembly Programming Tools\assemblytools\Notepad++Portable\Data\Config\config.xml is closed.
+2024-10-03 22:19:55  C:\CCL\Assembly Programming Tools\assemblytools\Notepad++Portable\App\Notepad++64\session.xml is opened.
+2024-10-03 22:19:55  C:\CCL\Assembly Programming Tools\assemblytools\Notepad++Portable\App\Notepad++64\session.xml  11351/11351 bytes are written.
+2024-10-03 22:19:55  C:\CCL\Assembly Programming Tools\assemblytools\Notepad++Portable\App\Notepad++64\session.xml is closed.
+2024-10-03 22:19:55  WM_DESTROY (isEndSessionStarted == true)
+2024-10-15 18:16:36  WM_QUERYENDSESSION (lParam: 0 - ordinary system shutdown/restart) =====================================
+2024-10-15 18:16:36  WM_ENDSESSION (wParam: TRUE, lParam: 0 - ordinary system shutdown/restart)
+2024-10-15 18:16:36  C:\CCL\Assembly Programming Tools\assemblytools\Notepad++Portable\Data\Config\config.xml is opened.
+2024-10-15 18:16:36  C:\CCL\Assembly Programming Tools\assemblytools\Notepad++Portable\Data\Config\config.xml  9245/9245 bytes are written.
+2024-10-15 18:16:36  C:\CCL\Assembly Programming Tools\assemblytools\Notepad++Portable\Data\Config\config.xml is closed.
+2024-10-15 18:16:36  C:\CCL\Assembly Programming Tools\assemblytools\Notepad++Portable\App\Notepad++64\session.xml is opened.
+2024-10-15 18:16:36  C:\CCL\Assembly Programming Tools\assemblytools\Notepad++Portable\App\Notepad++64\session.xml  15371/15371 bytes are written.
+2024-10-15 18:16:36  C:\CCL\Assembly Programming Tools\assemblytools\Notepad++Portable\App\Notepad++64\session.xml is closed.
+2024-10-15 18:16:36  WM_DESTROY (isEndSessionStarted == true)
+2024-10-24 22:02:59  WM_QUERYENDSESSION (lParam: 0 - ordinary system shutdown/restart) =====================================
+2024-10-24 22:03:00  WM_ENDSESSION (wParam: TRUE, lParam: 0 - ordinary system shutdown/restart)
+2024-10-24 22:03:00  C:\CCL\Assembly Programming Tools\assemblytools\Notepad++Portable\Data\Config\config.xml is opened.
+2024-10-24 22:03:00  C:\CCL\Assembly Programming Tools\assemblytools\Notepad++Portable\Data\Config\config.xml  9165/9165 bytes are written.
+2024-10-24 22:03:00  C:\CCL\Assembly Programming Tools\assemblytools\Notepad++Portable\Data\Config\config.xml is closed.
+2024-10-24 22:03:00  C:\CCL\Assembly Programming Tools\assemblytools\Notepad++Portable\App\Notepad++64\session.xml is opened.
+2024-10-24 22:03:00  C:\CCL\Assembly Programming Tools\assemblytools\Notepad++Portable\App\Notepad++64\session.xml  24424/24424 bytes are written.
+2024-10-24 22:03:00  C:\CCL\Assembly Programming Tools\assemblytools\Notepad++Portable\App\Notepad++64\session.xml is closed.
+2024-10-24 22:03:00  WM_DESTROY (isEndSessionStarted == true)

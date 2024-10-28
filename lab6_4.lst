@@ -1,0 +1,52 @@
+     1                                  [org 0x0100]
+     2 00000000 EB68                    jmp start
+     3 00000002 010002000300040005-     arr: dw 1,2,3,4,5,6,7,8,9,10
+     3 0000000B 000600070008000900-
+     3 00000014 0A00               
+     4 00000016 1400                    size: dw 20
+     5                                  
+     6                                  ReverseArray:
+     7 00000018 55                          push bp
+     8 00000019 89E5                        mov bp, sp
+     9 0000001B 83EC06                      sub sp, 6 
+    10 0000001E C746FE0000                  mov word[bp-2] , 0 
+    11 00000023 8B4E04                      mov cx, [bp+4]
+    12 00000026 894EFC                      mov word[bp-4] , cx 
+    13 00000029 836EFC02                    sub word[bp-4], 2
+    14 0000002D 8B4E04                      mov cx, [bp+4]
+    15 00000030 C1E902                      shr cx, 2
+    16 00000033 894EFA                      mov [bp-6], cx
+    17 00000036 BA0000                      mov dx, 0
+    18 00000039 B90000                      mov cx, 0
+    19 0000003C 8B5E06                      mov bx, [bp+6]
+    20                                      l1:
+    21 0000003F 3B4EFA                      cmp cx, [bp-6]
+    22 00000042 731F                        jae loopend
+    23 00000044 83C101                      add cx, 1
+    24                                  
+    25 00000047 89DE                        mov si, bx
+    26 00000049 89DF                        mov di, bx
+    27 0000004B 0376FE                      add word si, [bp-2]
+    28 0000004E 037EFC                      add word di, [bp-4]
+    29 00000051 8B04                        mov ax, [si]
+    30 00000053 8B15                        mov dx, [di]
+    31 00000055 8914                        mov word [si], dx
+    32 00000057 8905                        mov word [di], ax
+    33 00000059 8346FE02                    add word[bp-2], 2
+    34 0000005D 836EFC02                    sub word[bp-4], 2
+    35 00000061 EBDC                        jmp l1
+    36                                  
+    37                                      loopend:
+    38 00000063 83C406                      add sp, 6
+    39 00000066 5D                          pop bp
+    40 00000067 C20600                      ret 6
+    41                                      
+    42                                  
+    43                                  start:
+    44 0000006A 68[0200]                push arr
+    45 0000006D FF36[1600]              push word [size]
+    46 00000071 E8A4FF                  call ReverseArray
+    47                                  
+    48                                  
+    49 00000074 B8004C                  mov ax, 0x4c00
+    50 00000077 CD15                    int 21

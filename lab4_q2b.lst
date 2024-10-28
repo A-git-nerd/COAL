@@ -1,0 +1,37 @@
+     1                                  
+     2                                  [org 0x0100]
+     3                                  
+     4 00000000 BB0100                  mov bx, 1
+     5 00000003 B91000                  mov cx, 16
+     6 00000006 B80A00                  mov ax, 10
+     7 00000009 BA0000                  mov dx, 0
+     8                                  
+     9                                  shift:
+    10 0000000C 49                          dec cx
+    11 0000000D D1EB                        shr bx, 1
+    12 0000000F 7207                        jc bitDetected
+    13                                  loopCheck:
+    14 00000011 83F900                      cmp cx, 0
+    15 00000014 7407                        je bitInversion
+    16 00000016 EBF4                        jmp shift
+    17                                  bitDetected:
+    18 00000018 83C201                      add dx, 1
+    19 0000001B EBF4                        jmp loopCheck
+    20                                  bitInversion:
+    21 0000001D B91000                      mov cx, 16
+    22 00000020 BBFFFF                      mov bx, 0ffffh
+    23                                  bitSubtration:
+    24 00000023 49                          dec cx
+    25 00000024 4A                          dec dx
+    26 00000025 7402                        jz maskingBits
+    27 00000027 EBFA                        jmp bitSubtration
+    28                                  maskingBits:
+    29 00000029 D1EB                        shr bx, 1
+    30 0000002B 49                          dec cx
+    31 0000002C 7402                        jz bitXor
+    32 0000002E EBF9                        jmp maskingBits
+    33                                  bitXor:
+    34 00000030 31D8                        xor ax, bx
+    35                                  
+    36 00000032 B8004C                  mov ax, 0x4C00
+    37 00000035 CD21                    int 0x21

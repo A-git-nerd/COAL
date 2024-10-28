@@ -1,0 +1,88 @@
+     1                                  [org 100h]
+     2 00000000 E99F00                  jmp start
+     3 00000003 646473646668677274-     input:db 'ddsdfhgrtsdfhjghjksdd'
+     3 0000000C 736466686A67686A6B-
+     3 00000015 736464             
+     4 00000018 64                      find:db'd'
+     5 00000019 24                      replace:db'$'
+     6 0000001A 000000000000000000-     mystr:db 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+     6 00000023 000000000000000000-
+     6 0000002C 000000             
+     7                                  clrscr:
+     8 0000002F B800B8                  mov ax,0xb800
+     9 00000032 8EC0                    mov es,ax
+    10 00000034 BF0000                  mov di,0
+    11                                  next:
+    12 00000037 26C7052007              mov word[es:di],0x0720
+    13 0000003C 83C702                  add di,2
+    14 0000003F 81FFA00F                cmp di,4000
+    15 00000043 75F2                    jne next
+    16 00000045 C3                      ret
+    17                                  
+    18                                  replacestr:
+    19 00000046 55                      push bp
+    20 00000047 89E5                    mov bp,sp
+    21 00000049 A0[1800]                mov al,[find]
+    22 0000004C 8B7E04                  mov di,[bp+4]
+    23 0000004F BE0000                  mov si,0
+    24 00000052 B91600                  mov cx,22
+    25                                  
+    26                                  l1:
+    27 00000055 49                      dec cx
+    28 00000056 741A                    jz end
+    29 00000058 3805                    cmp [di],al
+    30 0000005A 740A                    je l2
+    31 0000005C 8A25                    mov ah,[di]
+    32 0000005E 88A4[1A00]              mov [mystr+si],ah
+    33 00000062 46                      inc si
+    34 00000063 47                      inc di
+    35                                  
+    36 00000064 EBEF                    jmp l1
+    37                                  
+    38                                  l2:
+    39 00000066 8A26[1900]              mov ah,[replace]
+    40 0000006A 88A4[1A00]              mov[mystr+si],ah
+    41 0000006E 46                      inc si
+    42 0000006F 47                      inc di
+    43 00000070 EBE3                    jmp l1
+    44                                  end:
+    45 00000072 5D                      pop bp
+    46 00000073 C3                      ret
+    47                                  
+    48                                  print:
+    49 00000074 55                      push bp
+    50 00000075 89E5                    mov bp,sp
+    51 00000077 B800B8                  mov ax,0xb800
+    52 0000007A 8EC0                    mov es,ax
+    53 0000007C B050                    mov al,80
+    54 0000007E B102                    mov cl,2
+    55 00000080 F6E1                    mul byte cl
+    56 00000082 B500                    mov ch,0
+    57 00000084 01C8                    add ax,cx
+    58 00000086 D1E0                    shl ax,1
+    59 00000088 89C7                    mov di,ax
+    60 0000008A BE[1A00]                mov si,mystr
+    61 0000008D B91500                  mov cx,21
+    62 00000090 B407                    mov ah, 0x07
+    63                                  
+    64                                  repeat:
+    65 00000092 8A04                    mov al,[si]
+    66 00000094 268905                  mov [es:di],ax
+    67 00000097 46                      inc si
+    68 00000098 83C702                  add di,2
+    69 0000009B 49                      dec cx
+    70 0000009C 7402                    jz end2
+    71 0000009E EBF2                    jmp repeat
+    72                                  end2:
+    73 000000A0 5D                      pop bp
+    74 000000A1 C3                      ret
+    75                                  
+    76                                  start:
+    77                                  
+    78 000000A2 E88AFF                  call clrscr
+    79 000000A5 68[0300]                push input
+    80 000000A8 E89BFF                  call replacestr
+    81 000000AB E8C6FF                  call print
+    82                                  
+    83 000000AE B8004C                  mov ax,0x4c00
+    84 000000B1 CD21                    int 21h

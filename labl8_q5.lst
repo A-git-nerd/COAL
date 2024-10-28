@@ -1,0 +1,50 @@
+     1                                  [org 0x100]
+     2                                  clrScr:
+     3 00000000 B800B8                      mov ax, 0xb800
+     4 00000003 8EC0                        mov es, ax
+     5 00000005 BF0000                      mov di, 0
+     6 00000008 B82007                      mov ax, 0x0720
+     7 0000000B B9D007                      mov cx, 2000
+     8 0000000E FC                          cld
+     9 0000000F F3AB                        rep stosw
+    10 00000011 EB2C                        jmp main
+    11                                  
+    12                                  print:
+    13 00000013 55                          push bp          
+    14 00000014 89E5                        mov bp, sp       
+    15 00000016 BB0000                      mov bx, 0
+    16 00000019 B800B8                      mov ax, 0xb800
+    17 0000001C 8EC0                        mov es, ax
+    18 0000001E BE[5200]                    mov si, arr
+    19 00000021 8B7E04                      mov di, [bp+4]
+    20 00000024 B96400                      mov cx, 100
+    21                                  next:
+    22 00000027 B407                        mov ah, 0x07
+    23 00000029 AC                          lodsb
+    24 0000002A 3C64                        cmp al, 'd'
+    25 0000002C 7506                        jne skip
+    26 0000002E B124                        mov cl, '$'
+    27 00000030 4E                          dec si
+    28 00000031 880C                        mov [si], cl
+    29 00000033 46                          inc si
+    30                                  skip:
+    31 00000034 3C30                        cmp al, '0'
+    32 00000036 7403                        je terminate
+    33 00000038 AB                          stosw
+    34 00000039 EBEC                        jmp next
+    35                                  terminate:
+    36 0000003B 5D                          pop bp           
+    37 0000003C C20200                      ret 2            
+    38                                  main:
+    39 0000003F B8C800                      mov ax, 200      
+    40 00000042 50                          push ax
+    41 00000043 E8CDFF                      call print
+    42 00000046 B86801                      mov ax, 360      
+    43 00000049 50                          push ax
+    44 0000004A E8C6FF                      call print
+    45 0000004D B8004C                      mov ax, 0x4c00   
+    46 00000050 CD21                        int 0x21
+    47                                  
+    48 00000052 646473646668677274-     arr: db 'ddsdfhgrtsdfhjghjksdd0'
+    48 0000005B 736466686A67686A6B-
+    48 00000064 73646430           

@@ -1,0 +1,62 @@
+     1                                  [org 100h]
+     2                                  
+     3 00000000 EB0C                    jmp Print
+     4                                  
+     5 00000002 0105070802FF            R: db 1, 5, 7, 8, 2, -1   ; Array of row values (8-bit)
+     6 00000008 0000010302FF            C: db 0, 0, 1, 3, 2, -1   ; Array of column values (8-bit)
+     7                                  
+     8                                  Print:
+     9 0000000E B800B8                      mov ax, 0xb800         ; Set video memory segment
+    10 00000011 8EC0                        mov es, ax
+    11 00000013 BF0000                      mov di, 0              ; Initialize DI to top left of video memory
+    12 00000016 BE0000                      mov si, 0              ; Initialize SI to 0 (index for R and C)
+    13 00000019 B407                        mov ah, 0x07           ; Attribute for white text on black background
+    14                                  
+    15                                  LesGo:
+    16 0000001B 8A84[0200]                  mov al, [R + si]       ; Load 8-bit value from R into AL
+    17 0000001F 3CFF                        cmp al, -1             ; Check for end of array (-1 marks end)
+    18 00000021 7437                        je end                 ; Jump to end if reached the end of array
+    19                                  
+    20 00000023 50                          push ax                ; Push R (Row) value on stack (must be word-aligned)
+    21                                      
+    22 00000024 8A84[0800]                  mov al, [C + si]       ; Load 8-bit value from C into AL
+    23 00000028 B400                        mov ah, 0              ; Zero out AH to make it a 16-bit value in AX
+    24 0000002A 50                          push ax                ; Push C (Column) value on stack
+    25                                  
+    26 0000002B 83C601                      add si, 1              ; Move to the next element in arrays
+    27                                  
+    28 0000002E E80F00                      call Cal               ; Call subroutine to calculate video memory offset
+    29                                  
+    30 00000031 5F                          pop word di            ; Get the calculated DI (destination index)
+    31 00000032 26C60541                    mov byte [es:di], 0x41 ; Write 'A' character at the calculated position
+    32 00000036 26C6450107                  mov byte [es:di+1], 0x07 ; Set attribute (white on black)
+    33                                  
+    34 0000003B 83C702                      add di, 2              ; Move to the next character position in video memory
+    35                                  
+    36 0000003E EBDB                        jmp LesGo              ; Repeat for the next character
+    37                                  
+    38                                  Cal:
+    39 00000040 55                          push bp                ; Save BP
+    40 00000041 89E5                        mov bp, sp             ; Set BP to point to the current stack frame
+    41                                  
+    42 00000043 8B4604                      mov ax, [bp + 4]       ; C (Column) value
+    43 00000046 8B5E06                      mov bx, [bp + 6]       ; R (Row) value
+    44                                  
+    45                                      ; Calculate video memory offset:
+    46                                      ; Each row in text mode consists of 80 columns.
+    47                                      ; Each character takes 2 bytes in video memory (1 byte for character, 1 for attribute).
+    48                                      ; Formula: offset = (row * 80 + column) * 2
+    49                                  
+    50 00000049 D1E3                        shl bx, 1              ; Multiply R (Row) by 2 (word size in video memory)
+    51 0000004B BF5000                      mov di, 80             ; 80 columns per row
+    52 0000004E F7E7                        mul di                 ; Multiply Row * 80 -> result in AX (DX:AX)
+    53 00000050 034604                      add ax, [bp + 4]       ; Add the column value
+    54 00000053 D1E0                        shl ax, 1              ; Multiply by 2 to get byte offset
+    55 00000055 50                          push ax                ; Push the result (video memory offset)
+    56                                  
+    57 00000056 5D                          pop bp                 ; Restore BP
+    58 00000057 C20400                      ret 4                  ; Return and clean up 4 bytes (R and C pushed)
+    59                                  
+    60                                  end:
+    61 0000005A B8004C                      mov ax, 4c00h          ; Terminate the program
+    62 0000005D CD21                        int 21h

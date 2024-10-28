@@ -1,0 +1,32 @@
+     1                                  [org 100h]
+     2                                  
+     3 00000000 B80000                  mov ax,0
+     4 00000003 BB0000                  mov bx,0
+     5 00000006 B90000                  mov cx,0
+     6 00000009 BA0000                  mov dx,0
+     7                                  
+     8 0000000C A1[3600]                mov ax,[num] ;loading number
+     9 0000000F 85C0                    test ax,ax
+    10 00000011 7816                    js Negative
+    11                                  
+    12 00000013 BA0000                  mov dx,0
+    13 00000016 A1[3600]                mov ax,[num]
+    14 00000019 F736[3800]              div word [divisor]
+    15 0000001D 85D2                    test dx,dx
+    16 0000001F 83FA00                  cmp dx,0
+    17 00000022 750A                    jne Div
+    18                                  
+    19 00000024 BB0100                  mov bx,1
+    20 00000027 EB08                    jmp end
+    21                                  
+    22                                  Negative:
+    23 00000029 BB0000                  mov bx,0 
+    24 0000002C EB03                    jmp end
+    25                                  
+    26                                  Div:
+    27 0000002E BB0000                  mov bx,0
+    28                                  end:
+    29 00000031 B84C00                  mov ax,4ch
+    30 00000034 CD21                    int 21h
+    31 00000036 E8FF                    num: dw -24
+    32 00000038 0200                    divisor:dw 2

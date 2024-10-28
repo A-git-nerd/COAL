@@ -1,0 +1,39 @@
+     1                                  [org 100h]
+     2                                  
+     3 00000000 8B0E[3600]              mov cx,[num]
+     4 00000004 8B1E[3800]              mov bx,[iterations]
+     5 00000008 A1[3600]                mov ax, [num]         ; Load num into AX
+     6 0000000B 85C0                    test ax,ax
+     7 0000000D 83F801                  cmp ax, 1             ; Check if num <= 1
+     8 00000010 7617                    jbe not_prime         ; If num <= 1, jump to not_prime
+     9                                  
+    10                                  
+    11                                  Prime_Numbers:
+    12 00000012 BA0000                  mov dx, 0  
+    13 00000015 89C8                    mov ax, cx        ; Reload num into AX           ; Clear DX for division
+    14 00000017 F7F3                    div word bx ; Divide AX by [iterations]
+    15 00000019 85D2                    test dx,dx
+    16 0000001B 83FA00                  cmp dx, 0             ; Check if remainder (DX) is zero
+    17 0000001E 7409                    je not_prime          ; If remainder is zero, num is not prime
+    18 00000020 43                      inc bx     ; Increment iterations
+    19                                  
+    20 00000021 85DB                    test bx,bx
+    21 00000023 39CB                    cmp bx, cx  ; Compare iterations with num
+    22 00000025 7D07                    jge found             ; If iterations >= num, jump to found
+    23 00000027 EBE9                    jmp Prime_Numbers     ; Continue checking with next divisor
+    24                                  
+    25                                  not_prime:
+    26 00000029 B90000                  mov cx, 0             ; Set CX to 0 (not prime)
+    27 0000002C EB03                    jmp end               ; Jump to end
+    28                                  
+    29                                  found:
+    30 0000002E B90100                  mov cx, 1             ; Set CX to 1 (prime)
+    31                                  
+    32                                  end:
+    33 00000031 B84C00                  mov ax, 4Ch           ; Terminate program
+    34 00000034 CD21                    int 21h               ; DOS interrupt to terminate
+    35                                  
+    36 00000036 1E00                    num: dw 30           ; The number to check
+    37 00000038 0200                    iterations: dw 2      ; Current divisor to test
+    38                                  
+    39                                  

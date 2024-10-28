@@ -1,0 +1,32 @@
+[org 100h]
+
+jmp start
+clr:
+push di
+push es
+push ax
+push cx
+
+mov cx,2000
+mov ax,0xb800
+mov es,ax
+
+cls:
+mov word[es:di],0x0720
+add di,2
+loop cls
+
+pop cx
+pop ax
+pop es
+pop di
+
+ret
+
+start:
+call clr
+
+
+
+mov ax,4ch
+int 21h

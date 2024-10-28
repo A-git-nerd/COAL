@@ -1,0 +1,28 @@
+     1                                  [org 100h]
+     2                                  
+     3 00000000 EB02                    jmp start                ; Jump to start
+     4                                  
+     5 00000002 0700                    complement_Need: dw 7     ; Number of bits to complement
+     6                                  
+     7                                  start:
+     8 00000004 B8A5AB                      mov ax, 0xABA5        ; Load the original number into AX (1010 1011 1010 0101)
+     9                                  
+    10                                      ; Isolate the last 7 bits
+    11 00000007 89C3                        mov bx, ax            ; Copy AX to BX
+    12 00000009 83E37F                      and bx, 007Fh         ; BX = AX & 0x007F (this isolates the last 7 bits)
+    13                                      
+    14                                      ; Complement the last 7 bits
+    15 0000000C F7D3                        not bx                ; Complement BX (last 7 bits)
+    16                                  
+    17                                      ; Ensure the complemented result still fits in 7 bits
+    18 0000000E 83E37F                      and bx, 007Fh         ; Mask again to make sure only 7 bits are affected
+    19                                  
+    20                                      ; Combine the complemented bits with the upper bits
+    21 00000011 83E080                      and ax, 0FF80h        ; Clear the last 7 bits of AX (keep the first 9 bits)
+    22 00000014 09D8                        or ax, bx             ; OR the complemented last 7 bits back into AX
+    23                                  
+    24                                      ; AX now contains the modified value with complemented last 7 bits
+    25                                  
+    26                                  end:
+    27 00000016 B8004C                      mov ax, 4C00h         ; Terminate the program
+    28 00000019 CD21                        int 21h

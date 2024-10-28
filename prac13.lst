@@ -1,0 +1,106 @@
+     1                                  [org 100h]
+     2 00000000 E9CA00                  jmp start
+     3 00000003 0800                    h: dw 8
+     4 00000005 0E00                    base: dw 14
+     5 00000007 0300                    count: dw 3
+     6 00000009 0000                    row:dw 0
+     7                                  
+     8                                  delay:
+     9 0000000B 51                      push cx
+    10 0000000C B90F00                  mov cx,0x000F
+    11                                  l1:
+    12 0000000F 51                      push cx
+    13 00000010 B9FFFF                  mov cx,0xFFFF
+    14                                  l2:
+    15 00000013 E2FE                    loop l2
+    16 00000015 59                      pop cx
+    17 00000016 E2F7                    loop l1
+    18 00000018 59                      pop cx
+    19 00000019 C3                      ret
+    20                                  
+    21                                  clr:
+    22 0000001A B800B8                  mov ax,0xb800
+    23 0000001D 8EC0                    mov es,ax
+    24 0000001F BF0000                  mov di,0
+    25                                  
+    26                                  cls:
+    27 00000022 26C7052007              mov word [es:di],0x0720
+    28 00000027 83C702                  add di,2
+    29 0000002A 81FFA00F                cmp di,4000
+    30 0000002E 75F2                    jne cls
+    31 00000030 C3                      ret
+    32                                  
+    33                                  drawTriangle:
+    34 00000031 B800B8                  mov ax,0xb800
+    35 00000034 8EC0                    mov es,ax
+    36 00000036 BF0000                  mov di,0
+    37 00000039 26C7052A02              mov word [es:di],0x022A
+    38 0000003E E8CAFF                  call delay
+    39 00000041 FF06[0900]              inc word[row]
+    40 00000045 BBA000                  mov bx ,160
+    41 00000048 A1[0900]                mov ax,[row]
+    42 0000004B F7E3                    mul bx
+    43                                  
+    44 0000004D 89C7                    mov di,ax
+    45                                  
+    46 0000004F 26C706A0002A02          mov word [es:160],0x022A
+    47 00000056 E8B2FF                  call delay
+    48                                  
+    49 00000059 BFA400                  mov di,164
+    50 0000005C 26C706A4002A02          mov word [es:164],0x022A
+    51 00000063 E8A5FF                  call delay
+    52                                  
+    53 00000066 FF0E[0300]              dec word[h]
+    54 0000006A FF0E[0300]              dec word[h]
+    55                                  
+    56                                  l11:
+    57 0000006E FF06[0900]              inc word[row]
+    58 00000072 BBA000                  mov bx ,160
+    59 00000075 A1[0900]                mov ax,[row]
+    60 00000078 F7E3                    mul bx
+    61                                  
+    62 0000007A 89C7                    mov di,ax
+    63                                  
+    64 0000007C 26C7052A02              mov word [es:di],0x022A
+    65 00000081 E887FF                  call delay
+    66                                  
+    67 00000084 A1[0700]                mov ax,[count]
+    68 00000087 83C001                  add ax,1
+    69 0000008A BB0200                  mov bx,2
+    70 0000008D F7E3                    mul bx
+    71 0000008F 01C7                    add di,ax
+    72                                  
+    73                                  
+    74 00000091 26C7052A02              mov word [es:di],0x022A
+    75 00000096 E872FF                  call delay
+    76                                  
+    77 00000099 FF0E[0300]              dec word [h]
+    78 0000009D A1[0300]                mov ax,[h]
+    79 000000A0 FF06[0700]              inc word [count]
+    80 000000A4 FF06[0700]              inc word [count]
+    81 000000A8 83F801                  cmp ax ,1
+    82 000000AB 75C1                    jne l11
+    83                                  
+    84                                  l233:
+    85 000000AD FF06[0900]              inc word[row]
+    86 000000B1 BBA000                  mov bx ,160
+    87 000000B4 A1[0900]                mov ax,[row]
+    88 000000B7 F7E3                    mul bx
+    89                                  
+    90 000000B9 89C7                    mov di,ax
+    91 000000BB 8B0E[0500]              mov cx, [base]
+    92                                  l22:
+    93                                  
+    94 000000BF 26C7052A02              mov word [es:di],0x022A
+    95 000000C4 E844FF                  call delay
+    96                                  
+    97 000000C7 83C702                  add di,2
+    98 000000CA E2F3                    loop l22
+    99 000000CC C3                      ret
+   100                                  
+   101                                  start:
+   102 000000CD E84AFF                  call clr
+   103 000000D0 E85EFF                  call drawTriangle
+   104                                  
+   105 000000D3 B84C00                  mov ax,4ch
+   106 000000D6 CD21                    int 21h

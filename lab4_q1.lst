@@ -1,0 +1,27 @@
+     1                                  [org 100h]
+     2 00000000 EB06                    jmp start
+     3 00000002 1000                    size: dw 16
+     4 00000004 0100                    count: dw 1
+     5 00000006 0000                    noOfOnes: dw 0
+     6                                  start:
+     7 00000008 BB89B1                  mov bx,0xB189
+     8                                  
+     9                                  checking_Ones:
+    10 0000000B D1EB                    shr bx,1
+    11 0000000D 7206                    jc carryFound
+    12 0000000F FF06[0400]              inc word [count]
+    13 00000013 EBF6                    jmp checking_Ones
+    14                                  
+    15                                  
+    16                                  carryFound:
+    17 00000015 FF06[0600]              inc word [noOfOnes]
+    18 00000019 A1[0200]                mov ax,[size]
+    19 0000001C 3906[0400]              cmp [count],ax
+    20 00000020 7406                    je end
+    21 00000022 FF06[0400]              inc word [count]
+    22 00000026 EBE3                    jmp checking_Ones
+    23                                  
+    24                                  
+    25                                  end:
+    26 00000028 B84C00                  mov ax,4ch
+    27 0000002B CD21                    int 21h

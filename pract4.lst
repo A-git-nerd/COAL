@@ -1,0 +1,92 @@
+     1                                  [org 0x100]
+     2 00000000 EB08                    jmp start
+     3 00000002 0A00                    size:dw 10
+     4 00000004 0100                    count:dw 1
+     5 00000006 0000                    row: dw 0
+     6 00000008 0800                    tempSize: dw 8
+     7                                  
+     8                                  start:
+     9                                  
+    10                                  cls:
+    11 0000000A B800B8                  mov ax,0xb800
+    12 0000000D 8EC0                    mov es,ax
+    13                                  
+    14 0000000F BF0000                  mov di,0
+    15                                  
+    16                                  clr:
+    17 00000012 26C7052007              mov word [es:di],0x0720
+    18 00000017 83C702                  add di,2
+    19 0000001A 81FFA00F                cmp di,4000
+    20 0000001E 75F2                    jne clr
+    21                                  
+    22                                  print:
+    23 00000020 A1[0200]                mov ax,[size]
+    24 00000023 BB0200                  mov bx,2
+    25 00000026 F7E3                    mul bx ;bx * ax =ax
+    26 00000028 89C7                    mov di,ax
+    27                                  
+    28 0000002A A1[0600]                mov ax,[row]
+    29                                  
+    30 0000002D BBA000                  mov bx,160
+    31 00000030 F7E3                    mul bx
+    32                                  
+    33 00000032 01C7                    add di,ax
+    34 00000034 FF06[0600]              inc word [row]
+    35 00000038 8B0E[0400]              mov cx,[count]
+    36                                  printing:
+    37 0000003C 26C7054107              mov word [es:di],0x0741
+    38 00000041 83C702                  add di,2
+    39 00000044 E2F6                    loop printing
+    40                                  
+    41 00000046 FF0E[0200]              dec word [size]
+    42 0000004A BA0200                  mov dx,2
+    43 0000004D 0116[0400]              add word [count],dx
+    44                                  
+    45 00000051 8B16[0200]              mov dx,[size]
+    46 00000055 83FA00                  cmp dx,0
+    47 00000058 75C6                    jne print
+    48                                  
+    49                                  
+    50                                  
+    51                                  print2:
+    52 0000005A A1[0800]                mov ax,[tempSize]
+    53 0000005D A3[0200]                mov [size],ax
+    54 00000060 FF06[0200]              inc word [size]
+    55 00000064 FF0E[0400]              dec word [count]
+    56 00000068 FF0E[0400]              dec word [count]
+    57 0000006C FF0E[0400]              dec word [count]
+    58 00000070 FF0E[0400]              dec word [count]
+    59                                  
+    60                                  calc:
+    61 00000074 A1[0800]                mov ax,[tempSize]
+    62 00000077 83C001                  add ax,1
+    63 0000007A 2B06[0200]              sub ax,[size]
+    64 0000007E 83C002                  add ax,2
+    65 00000081 BB0200                  mov bx,2
+    66 00000084 F7E3                    mul bx ;bx * ax =ax
+    67 00000086 89C7                    mov di,ax
+    68                                  
+    69 00000088 A1[0600]                mov ax,[row]
+    70                                  
+    71 0000008B BBA000                  mov bx,160
+    72 0000008E F7E3                    mul bx
+    73                                  
+    74 00000090 01C7                    add di,ax
+    75                                  
+    76 00000092 FF06[0600]              inc word [row]
+    77 00000096 8B0E[0400]              mov cx,[count]
+    78                                  printing2:
+    79 0000009A 26C7054107              mov word [es:di],0x0741
+    80 0000009F 83C702                  add di,2
+    81 000000A2 E2F6                    loop printing2
+    82                                  
+    83 000000A4 FF0E[0200]              dec word [size]
+    84 000000A8 BA0200                  mov dx,2
+    85 000000AB 2916[0400]              sub word [count],dx
+    86                                  
+    87 000000AF 8B16[0200]              mov dx,[size]
+    88 000000B3 83FA00                  cmp dx,0
+    89 000000B6 75BC                    jne calc
+    90                                  
+    91 000000B8 B8004C                  mov ax,0x4c00
+    92 000000BB CD21                    int 0x21

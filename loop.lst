@@ -1,0 +1,17 @@
+     1                                  [org 100h]
+     2                                  
+     3 00000000 BB1500                  mov bx,21
+     4                                  
+     5                                  while:
+     6 00000003 83FB00                  cmp bx,0
+     7 00000006 7405                    je end
+     8                                  
+     9 00000008 4B                      dec bx
+    10 00000009 4B                      dec bx
+    11 0000000A 4B                      dec bx
+    12                                  
+    13 0000000B EBF6                    jmp while
+    14                                  
+    15                                  end:
+    16 0000000D B84C00                  mov ax,4ch
+    17 00000010 CD21                    int 21h

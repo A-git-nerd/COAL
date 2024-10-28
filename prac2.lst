@@ -1,0 +1,77 @@
+     1                                  [org 100h]
+     2                                  
+     3                                  start:
+     4                                      ; Prepare to call the printnum subroutine
+     5 00000000 B8D204                      mov ax, 1234  ; Number to print
+     6 00000003 50                          push ax       ; Pass the number as argument on the stack
+     7 00000004 E80800                  	call cls
+     8 00000007 E81900                      call printnum ; Call the subroutine to print the number
+     9                                  
+    10                                      ; Exit the program
+    11 0000000A B8004C                      mov ax, 4c00h
+    12 0000000D CD21                        int 21h
+    13                                  
+    14                                  ; Subroutine to print a number at the top-left of the screen
+    15                                  cls:
+    16 0000000F B800B8                  mov ax,0xB800
+    17 00000012 8EC0                    mov es,ax
+    18                                  
+    19                                  clr:
+    20 00000014 26C7052007              mov word [es:di],0x0720
+    21 00000019 83C702                  add di,2
+    22 0000001C 81FFA00F                cmp di,4000
+    23 00000020 75F2                    jne clr
+    24                                  
+    25 00000022 C3                      ret
+    26                                  
+    27                                  printnum:
+    28 00000023 55                          push bp
+    29 00000024 89E5                        mov bp, sp
+    30                                  
+    31                                      ; Save registers
+    32 00000026 06                          push es
+    33 00000027 50                          push ax
+    34 00000028 53                          push bx
+    35 00000029 51                          push cx
+    36 0000002A 52                          push dx
+    37 0000002B 57                          push di
+    38                                  
+    39                                      ; Set video segment to 0xB800 (for text mode)
+    40 0000002C B800B8                      mov ax, 0xb800
+    41 0000002F 8EC0                        mov es, ax
+    42                                  
+    43                                      ; Load the number to be printed (passed as argument)
+    44 00000031 8B4604                      mov ax, [bp+4]  ; Load number into AX
+    45 00000034 BB0A00                      mov bx, 10      ; Use base 10 for division
+    46 00000037 B90000                      mov cx, 0       ; Initialize count of digits
+    47                                  
+    48                                  nextdigit:
+    49 0000003A BA0000                      mov dx, 0       ; Clear DX for division
+    50 0000003D F7F3                        div bx          ; Divide AX by 10 (result in AX, remainder in DX)
+    51 0000003F 80C230                      add dl, 0x30    ; Convert remainder (digit) to ASCII
+    52 00000042 52                          push dx         ; Save ASCII digit on stack
+    53 00000043 41                          inc cx          ; Increment digit count
+    54 00000044 83F800                      cmp ax, 0       ; Is quotient zero?
+    55 00000047 75F1                        jnz nextdigit   ; If not, divide again
+    56                                  
+    57                                      ; Now display the digits from the stack (in reverse order)
+    58 00000049 BF0000                      mov di, 0       ; Set DI to top-left corner of the screen
+    59                                  
+    60                                  displaydigits:
+    61 0000004C 5A                          pop dx          ; Get next digit from stack
+    62 0000004D 268815                      mov [es:di], dl ; Store character at video memory location ES:DI
+    63 00000050 26C6450107                  mov [es:di+1], byte 0x07 ; Set attribute to white text on black background
+    64 00000055 83C702                      add di, 2       ; Move to next character position on screen
+    65 00000058 E2F2                        loop displaydigits  ; Repeat for all digits
+    66                                  
+    67                                      ; Restore registers
+    68 0000005A 5F                          pop di
+    69 0000005B 5A                          pop dx
+    70 0000005C 59                          pop cx
+    71 0000005D 5B                          pop bx
+    72 0000005E 58                          pop ax
+    73 0000005F 07                          pop es
+    74                                  
+    75                                      ; Restore base pointer
+    76 00000060 5D                          pop bp
+    77 00000061 C20200                      ret 2  ; Return, cleaning up 2 bytes (number parameter) from the stack

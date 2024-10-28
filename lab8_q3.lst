@@ -1,0 +1,72 @@
+     1                                  [org 100h]
+     2 00000000 EB1E                    jmp start
+     3                                  
+     4 00000002 4920616D2061207374-     str1: db 'I am a student of coal', 0        ; Input string (null-terminated)
+     4 0000000B 7564656E74206F6620-
+     4 00000014 636F616C00         
+     5 00000019 61                      search_char: db 'a'                         ; Character to find (a)
+     6 0000001A 00                      count: db 0                                 ; Counter for occurrences
+     7 0000001B 613A00                  msg: db 'a:', 0                             ; Message to display
+     8 0000001E 3000                    num_str: db '0', 0                          ; To hold the ASCII number of occurrences
+     9                                  
+    10                                  start:
+    11                                      ; Clear the screen
+    12 00000020 B800B8                      mov ax, 0xb800
+    13 00000023 8EC0                        mov es, ax
+    14 00000025 BF0000                      mov di, 0
+    15 00000028 B9D007                      mov cx, 2000
+    16                                  cls:
+    17 0000002B 26C7052007                  mov word [es:di], 0x0720                ; Fill with spaces (attribute 07h)
+    18 00000030 83C702                      add di, 2
+    19 00000033 E2F6                        loop cls
+    20                                  
+    21 00000035 B800B8                      mov ax, 0xb800
+    22 00000038 8EC0                        mov es, ax
+    23 0000003A BFA000                      mov di, 160                             ; Second line of screen
+    24 0000003D B407                        mov ah, 0x07                            ; Attribute byte (white text)
+    25 0000003F BE[0200]                    mov si, str1
+    26 00000042 B91600                      mov cx, 22                              ; Length of the string
+    27 00000045 FC                          cld                                     ; Clear direction flag
+    28                                  next_char:
+    29 00000046 AC                          lodsb                                   ; Load byte from string into AL
+    30 00000047 AB                          stosw                                   ; Store AL and AH (character and attribute) in video memory
+    31 00000048 E2FC                        loop next_char
+    32                                  
+    33                                      ; Now, find occurrences of 'a' and count them
+    34 0000004A BE[0200]                    mov si, str1                            ; Reload SI to start of the string
+    35 0000004D B91600                      mov cx, 22                              ; Length of the string again
+    36                                  find_a:
+    37 00000050 AC                          lodsb                                   ; Load next character into AL
+    38 00000051 3A06[1900]                  cmp al, [search_char]                   ; Compare AL with 'a'
+    39 00000055 7504                        jne next_in_search                      ; If not 'a', skip to the next character
+    40                                      
+    41                                      ; Increment the occurrence counter if 'a' is found
+    42 00000057 FE06[1A00]                  inc byte [count]
+    43                                  
+    44                                  next_in_search:
+    45 0000005B E2F3                        loop find_a                             ; Repeat until the string is done
+    46                                  
+    47                                      ; Convert count to ASCII
+    48 0000005D A0[1A00]                    mov al, [count]                         ; Load the count value into AL
+    49 00000060 0430                        add al, '0'                             ; Convert number to ASCII
+    50 00000062 A2[1E00]                    mov [num_str], al                       ; Store the ASCII number in num_str
+    51                                  
+    52                                      ; Display the message and the number of occurrences on the next line
+    53 00000065 BF4001                      mov di, 320                             ; Start at the fourth line (160 * 2 = 320)
+    54 00000068 BE[1B00]                    mov si, msg                             ; Load message address
+    55                                  print_msg:
+    56 0000006B AC                          lodsb                                   ; Load byte from message into AL
+    57 0000006C 3C00                        cmp al, 0                               ; Check for null terminator
+    58 0000006E 7406                        je print_num                            ; If null terminator, go to print the number
+    59 00000070 AB                          stosw                                   ; Store the character in video memory
+    60 00000071 83C702                      add di, 2                               ; Move to the next screen position
+    61 00000074 EBF5                        jmp print_msg
+    62                                  
+    63                                  print_num:
+    64 00000076 BE[1E00]                    mov si, num_str                         ; Load the number string address
+    65 00000079 AC                          lodsb                                   ; Load the ASCII number into AL
+    66 0000007A AB                          stosw                                   ; Store the number on the screen
+    67                                  
+    68                                      ; End the program
+    69 0000007B B8004C                      mov ax, 4C00h
+    70 0000007E CD21                        int 21h

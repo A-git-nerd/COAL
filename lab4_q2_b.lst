@@ -1,0 +1,18 @@
+     1                                  [org 100h]
+     2                                  
+     3 00000000 EB08                    jmp start
+     4 00000002 0100                    count:dw 1
+     5 00000004 1000                    size :dw 16
+     6 00000006 0700                    complement_Need: dw 7
+     7 00000008 0900                    Original_Bin: dw 9
+     8                                  start:
+     9 0000000A B8A5AB                  mov ax,0xABA5
+    10                                  
+    11                                  complementing:
+    12 0000000D D1E8                    shr ax,1
+    13 0000000F 73FC                    jnc complementing
+    14                                  
+    15                                  
+    16                                  end:
+    17 00000011 B84C00                  mov ax,4ch
+    18 00000014 CD21                    int 21h

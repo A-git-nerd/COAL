@@ -1,0 +1,21 @@
+     1                                  [org 100h]
+     2                                  
+     3 00000000 EB08                    jmp start                ; Jump to start
+     4                                  
+     5 00000002 0100                    count: dw 1              ; Counter (optional, could be used for iterations)
+     6 00000004 1000                    size: dw 16              ; Size (not used in this example)
+     7 00000006 0700                    complement_Need: dw 7     ; Number of bits to complement
+     8 00000008 0900                    Original_Bin: dw 9        ; Another variable to hold data (optional)
+     9                                  
+    10                                  start:
+    11 0000000A B8A5AB                      mov ax, 0xABA5        ; Load the original number into AX (1010 1011 1010 0101)
+    12                                  
+    13                                      ; Complement the last 7 bits using XOR
+    14 0000000D 83F07F                      xor ax, 007Fh         ; XOR AX with 0x007F (which has the last 7 bits set to 1)
+    15                                                            ; This flips the last 7 bits of AX
+    16                                      
+    17                                      ; After XOR, AX now has the complemented last 7 bits and the first 9 bits unchanged
+    18                                  
+    19                                  end:
+    20 00000010 B8004C                      mov ax, 4C00h         ; Terminate the program
+    21 00000013 CD21                        int 21h

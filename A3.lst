@@ -1,0 +1,49 @@
+     1                                  [org 0x100]
+     2                                  
+     3 00000000 B88FF0                  mov ax,0xF08F ;loading number
+     4 00000003 0000                    count: dw 0 ;need to do operation on only 8bits numbers 8+8 =16bit numbers
+     5                                  taking_ah_bit: ;load half number (ah)
+     6 00000005 833E[0300]08            cmp word [count],8 ;8bit number in ah
+     7 0000000A 7426                    je palindrome
+     8                                  
+     9 0000000C FF06[0300]              inc word [count]
+    10 00000010 D0E4                    shl ah,1 ;taking MSB bit 
+    11 00000012 7205                    jc found_a_carry_of_ah ;if cf=1 then bx=1
+    12                                  
+    13 00000014 BB0000                  mov bx,0 ;else bx=0
+    14                                  
+    15 00000017 EB05                    jmp taking_al_bit ;loading rest of half number in al
+    16                                  
+    17                                  
+    18                                  found_a_carry_of_ah:
+    19 00000019 BB0100                  mov bx,1
+    20 0000001C EB00                    jmp taking_al_bit
+    21                                  
+    22                                  
+    23                                  taking_al_bit: ;loading rest of half number in al
+    24 0000001E D0E8                    shr al,1 ;taking lsb bit
+    25 00000020 7205                    jc found_a_carry_of_al ;if cf =1 then cx=1
+    26 00000022 B90000                  mov cx,0 ;else cx=0
+    27                                  
+    28 00000025 EB05                    jmp comparison
+    29                                  
+    30                                  found_a_carry_of_al:
+    31 00000027 B90100                  mov cx,1
+    32 0000002A EB00                    jmp comparison
+    33                                  
+    34                                  comparison: ;comparing msb and lsb (bx and cx) 
+    35 0000002C 39CB                    cmp bx,cx
+    36 0000002E 7507                    jne not_palindrome ;not equal end program not palindrome
+    37                                  
+    38 00000030 EBD3                    jmp taking_ah_bit ;else taking other bits
+    39                                  
+    40                                  palindrome: ;at the end number is palindrome when loop terminates
+    41 00000032 BA0100                  mov dx,1
+    42 00000035 EB03                    jmp end
+    43                                  
+    44                                  not_palindrome:
+    45 00000037 BA0000                  mov dx,0
+    46                                  
+    47                                  end:
+    48 0000003A B8004C                  mov ax,0x4c00
+    49 0000003D CD21                    int 0x21

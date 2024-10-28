@@ -1,0 +1,31 @@
+     1                                  [org 100h]
+     2                                  
+     3 00000000 EB1B                    jmp start
+     4                                  clr:
+     5 00000002 57                      push di
+     6 00000003 06                      push es
+     7 00000004 50                      push ax
+     8 00000005 51                      push cx
+     9                                  
+    10 00000006 B9D007                  mov cx,2000
+    11 00000009 B800B8                  mov ax,0xb800
+    12 0000000C 8EC0                    mov es,ax
+    13                                  
+    14                                  cls:
+    15 0000000E 26C7052007              mov word[es:di],0x0720
+    16 00000013 83C702                  add di,2
+    17 00000016 E2F6                    loop cls
+    18                                  
+    19 00000018 59                      pop cx
+    20 00000019 58                      pop ax
+    21 0000001A 07                      pop es
+    22 0000001B 5F                      pop di
+    23                                  
+    24 0000001C C3                      ret
+    25                                  
+    26                                  start:
+    27 0000001D E8E2FF                  call clr
+    28                                  
+    29                                  
+    30 00000020 B84C00                  mov ax,4ch
+    31 00000023 CD21                    int 21h

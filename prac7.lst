@@ -1,0 +1,9 @@
+     1                                  [org 100h]
+     2                                  
+     3 00000000 B011                    mov al,0x11
+     4 00000002 B202                    mov dl,0x2
+     5                                  
+     6 00000004 F6F2                    div dl  ;al will q and ah will be r
+     7                                  
+     8 00000006 B84C00                  mov ax,4ch
+     9 00000009 CD21                    int 21h

@@ -1,0 +1,133 @@
+     1                                  [org 0x100]
+     2 00000000 EB00                    jmp initialize
+     3                                  
+     4                                  initialize: 
+     5 00000002 BE[E200]                    mov si,set1      ; Set1 pointer
+     6 00000005 BF[EA00]                    mov di,set2      ; Set2 pointer
+     7 00000008 BB0000                      mov bx,0         ; Index for result array
+     8                                  
+     9                                  
+    10                                  performing_union:
+    11 0000000B 8B04                        mov ax,[si]
+    12 0000000D 8B0D                        mov cx,[di]
+    13 0000000F 39C8                        cmp ax,cx
+    14 00000011 7410                        je equal  ; If (ax == cx)
+    15 00000013 39C8                        cmp ax,cx
+    16 00000015 7F1B                        jg greater ; If (ax > cx)
+    17 00000017 8987[F600]                  mov [ResultantArrayOfOperations+bx],ax  ; If (ax < cx)
+    18 0000001B 83C602                      add si,2
+    19 0000001E 83C302                      add bx,2
+    20 00000021 EB1B                        jmp check_union
+    21                                  
+    22                                  equal:
+    23 00000023 8987[F600]                  mov [ResultantArrayOfOperations+bx],ax   ; Either [ResultantArrayOfOperations+bx],ax or [ResultantArrayOfOperations+bx],cx since both are equal
+    24 00000027 83C602                      add si,2
+    25 0000002A 83C702                      add di,2
+    26 0000002D 83C302                      add bx,2
+    27 00000030 EB0C                        jmp check_union
+    28                                  
+    29                                  greater:
+    30 00000032 898F[F600]                  mov [ResultantArrayOfOperations+bx],cx 
+    31 00000036 83C702                      add di,2
+    32 00000039 83C302                      add bx,2
+    33 0000003C EB00                        jmp check_union
+    34                                  
+    35                                  check_union:
+    36 0000003E 803C00                      cmp byte[si],0
+    37 00000041 7407                        je finish_set1_union
+    38 00000043 803D00                      cmp byte[di],0
+    39 00000046 7415                        je finish_set2_union
+    40 00000048 EBC1                        jmp performing_union
+    41                                  
+    42                                  finish_set1_union:
+    43 0000004A 803D00                      cmp byte[di],0
+    44 0000004D 7421                        je finalize_union
+    45 0000004F 8B0D                        mov cx,[di]
+    46 00000051 898F[F600]                  mov [ResultantArrayOfOperations+bx],cx
+    47 00000055 83C302                      add bx,2
+    48 00000058 83C702                      add di,2
+    49 0000005B EBED                        jmp finish_set1_union
+    50                                  
+    51                                  finish_set2_union:
+    52 0000005D 803C00                      cmp byte[si],0
+    53 00000060 740E                        je finalize_union
+    54 00000062 8B04                        mov ax,[si]
+    55 00000064 8987[F600]                  mov [ResultantArrayOfOperations+bx],ax
+    56 00000068 83C302                      add bx,2
+    57 0000006B 83C602                      add si,2
+    58 0000006E EBED                        jmp finish_set2_union
+    59                                  
+    60                                  finalize_union:
+    61 00000070 BAAAAA                      mov dx,0xAAAA      ; Signal end of union operation
+    62 00000073 BB0000                      mov bx,0
+    63 00000076 BE[E200]                    mov si,set1
+    64 00000079 BF[EA00]                    mov di,set2
+    65                                  
+    66                                  ; Intersection of the sets
+    67                                  find_intersection:
+    68 0000007C 8B04                        mov ax,[si]
+    69 0000007E 8B0D                        mov cx,[di]
+    70 00000080 39C8                        cmp ax,cx
+    71 00000082 7402                        je save_intersection_value
+    72 00000084 EB07                        jmp skip_intersection
+    73                                  
+    74                                  save_intersection_value:
+    75 00000086 8987[F600]                  mov [ResultantArrayOfOperations+bx],ax
+    76 0000008A 83C302                      add bx,2
+    77                                  
+    78                                  skip_intersection:
+    79 0000008D 83C702                      add di,2
+    80 00000090 803D00                      cmp byte[di],0
+    81 00000093 7402                        je move_to_next_in_set1
+    82 00000095 EBE5                        jmp find_intersection
+    83                                  
+    84                                  move_to_next_in_set1:
+    85 00000097 83C602                      add si,2
+    86 0000009A 803C00                      cmp byte[si],0
+    87 0000009D 7405                        je end_intersection
+    88 0000009F BF[EA00]                    mov di,set2       ; Reset di to the start of set2
+    89 000000A2 EBD8                        jmp find_intersection
+    90                                  
+    91                                  end_intersection:
+    92 000000A4 BABBBB                      mov dx,0xBBBB     ; Signal end of intersection
+    93 000000A7 BB0000                      mov bx,0
+    94                                  
+    95                                  ; Set subtraction: set2 - set1
+    96                                  begin_subtraction:
+    97 000000AA BE[EA00]                    mov si,set2
+    98 000000AD BF[E200]                    mov di,set1
+    99                                  
+   100                                  subtract_sets:
+   101 000000B0 8B04                        mov ax,[si]
+   102 000000B2 8B0D                        mov cx,[di]
+   103 000000B4 39C8                        cmp ax,cx
+   104 000000B6 7413                        je skip_subtraction_step
+   105 000000B8 83C702                      add di,2
+   106 000000BB 803D00                      cmp byte[di],0
+   107 000000BE 7402                        je subtract_only_set2
+   108 000000C0 EBEE                        jmp subtract_sets
+   109                                  
+   110                                  subtract_only_set2:
+   111 000000C2 8987[F600]                  mov [ResultantArrayOfOperations+bx],ax
+   112 000000C6 83C302                      add bx,2
+   113 000000C9 EB0D                        jmp continue_subtraction
+   114                                  
+   115                                  skip_subtraction_step:
+   116 000000CB 83C602                      add si,2
+   117 000000CE BF[E200]                    mov di,set1        ; Reset to start of set1 for the next comparison
+   118 000000D1 803C00                      cmp byte[si],0
+   119 000000D4 7407                        je end_subtraction
+   120 000000D6 EBD8                        jmp subtract_sets
+   121                                  
+   122                                  continue_subtraction:
+   123 000000D8 83C602                      add si,2
+   124 000000DB EBD3                        jmp subtract_sets
+   125                                  
+   126                                  end_subtraction:
+   127 000000DD B8004C                      mov ax,0x4c00      ; End of the program
+   128 000000E0 CD21                        int 0x21
+   129                                  	
+   130 000000E2 0100040005000000        set1: dw 1,4,5,0
+   131 000000EA 010002000300040006-     set2: dw 1,2,3,4,6,0
+   131 000000F3 000000             
+   132 000000F6 0000                    ResultantArrayOfOperations dw 0

@@ -1,0 +1,32 @@
+section .data
+first:   dw 0x5678, 0x1234  ;0x12345678
+second:  dw 0xDEF0, 0x9ABC  ;0x9ABCDEF0
+result:  dw 0, 0, 0, 0      ;0x0000000000000000
+         section .text
+
+    mov ax,[first]          ;ax = A_low
+    mul word [second]       ;dx:ax = A_low * B_low
+    mov [result],ax
+    mov [result+2],dx       ;Result = A_low * B_low
+
+    mov ax,[first+2]        ;ax = A_high
+    mul word [second]       ;dx:ax = A_high * B_low
+    add [result+2],ax
+    adc [result+4],dx       ;Result = A_low * B_low
+                                     ; + (A_high * B_low) << 16
+
+    mov ax,[first]          ;ax = A_low
+    mul word [second+2]     ;dx:ax = A_low * B_high
+    add [result+2],ax
+    adc [result+4],dx       ;Result = A_low * B_low
+                                     ; + (A_high * B_low) << 16
+                                     ; + (A_low * B_high) << 16
+    adc word [result+6], 0   ; carry could propagate into the top chunk
+
+    mov ax,[first+2]        ;ax = A_high
+    mul word [second+2]     ;dx:ax = A_high * B_high
+    add [result+4],ax
+    adc [result+6],dx       ;Result = A_low * B_low
+                                     ; + (A_high * B_low) << 16
+                                     ; + (A_low * B_high) << 16
+                                     ; + (A_high * B_high) << 32

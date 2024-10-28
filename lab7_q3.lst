@@ -1,0 +1,65 @@
+     1                                  [org 0x100]
+     2                                  clear:
+     3 00000000 B800B8                  mov ax,0xB800
+     4 00000003 8EC0                    mov es,ax
+     5 00000005 BF0000                  mov di,0
+     6                                  next2:
+     7 00000008 26C7052007              mov word[es:di],0x0720
+     8 0000000D 83C702                  add di,2
+     9 00000010 81FFA00F                cmp di,4000
+    10 00000014 75F2                    jne next2
+    11 00000016 EB51                    jmp start
+    12                                  
+    13                                  movingstar:
+    14 00000018 BB0000                  mov bx,0
+    15 0000001B B050                    mov al,80
+    16 0000001D F626[7600]              mul byte[currrow]
+    17 00000021 8A1E[7700]              mov bl,[currcol]
+    18 00000025 01D8                    add ax,bx
+    19 00000027 D1E0                    shl ax,1
+    20 00000029 89C7                    mov di,ax
+    21 0000002B 26C7052A07              mov word[es:di],0x072A
+    22 00000030 C3                      ret
+    23                                  
+    24                                  mainloop:
+    25                                  
+    26 00000031 E8E4FF                  call movingstar
+    27 00000034 E82300                  call delay
+    28 00000037 26C7052007              mov word[es:di],0x0720
+    29 0000003C FE06[7700]              inc byte[currcol]
+    30 00000040 803E[7700]50            cmp byte[currcol],80
+    31 00000045 7510                    jne below
+    32 00000047 C606[7700]00            mov byte[currcol],0
+    33 0000004C FE06[7600]              inc byte[currrow]
+    34 00000050 803E[7600]19            cmp byte[currrow],25
+    35 00000055 7D02                    jge below2
+    36                                  below:
+    37 00000057 EBD8                    jmp mainloop
+    38                                  below2:
+    39 00000059 C3                      ret
+    40                                  
+    41                                  delay:
+    42 0000005A 51                      push cx
+    43 0000005B B90300                  mov cx, 3 ; change the values to increase delay time
+    44                                  delay_loop1:
+    45 0000005E 51                      push cx
+    46 0000005F B9FFFF                  mov cx, 0xFFFF
+    47                                  delay_loop2:
+    48 00000062 E2FE                    loop delay_loop2
+    49 00000064 59                      pop cx
+    50 00000065 E2F7                    loop delay_loop1
+    51 00000067 59                      pop cx
+    52 00000068 C3                      ret
+    53                                  
+    54                                  start:
+    55 00000069 B800B8                  mov ax,0xB800
+    56 0000006C 8EC0                    mov es,ax
+    57 0000006E E8C0FF                  call mainloop
+    58                                  
+    59                                  
+    60                                  
+    61                                  end:
+    62 00000071 B8004C                  mov ax,0x4c00
+    63 00000074 CD21                    int 0x21
+    64 00000076 01                      currrow:db 1
+    65 00000077 00                      currcol:db 0

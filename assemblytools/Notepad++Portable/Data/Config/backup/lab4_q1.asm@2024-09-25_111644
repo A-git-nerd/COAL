@@ -1,0 +1,30 @@
+[org 100h]
+
+jmp start
+
+size:       dw 16        ; Number of bits
+count:      dw 1         ; For completion
+noOfOnes:   dw 0         ; Number of ones
+
+start:
+    mov bx, 0xB189       ; Load the value into BX
+
+checking_Ones:
+    shr bx, 1            ; Shift right to check number of ones
+    jc carryFound        ; If one is found, jump to carryFound
+    cmp [count], ax      ; Check if the count has reached the size
+    je end               ; If equal, jump to end
+    inc word [count]     ; Increment count
+    jmp checking_Ones    ; Repeat the loop
+
+carryFound:
+    inc word [noOfOnes]  ; Increment the number of ones
+    mov ax, [size]       ; Load size into AX
+    cmp [count], ax      ; Check if the count has reached the size
+    je end               ; If equal, jump to end
+    inc word [count]     ; Increment count
+    jmp checking_Ones    ; Repeat the loop
+
+end:
+    mov ax, 4Ch          
+    int 21h         

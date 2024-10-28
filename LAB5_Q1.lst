@@ -1,0 +1,50 @@
+     1                                  [org 100h]
+     2                                  
+     3                                  start:
+     4 00000000 B90000                  mov cx,0
+     5 00000003 A1[7000]                mov ax,[num1 + 8]
+     6 00000006 8B0E[7800]              mov cx,[num2 + 8]
+     7 0000000A 01C8                    add ax,cx
+     8 0000000C A3[8000]                mov [result+8],ax
+     9                                  
+    10 0000000F A1[7200]                mov ax,[num1+10]
+    11 00000012 8B0E[7A00]              mov cx,[num2+10]
+    12 00000016 01C8                    add ax,cx
+    13 00000018 A3[8200]                mov [result+10],ax
+    14                                  
+    15 0000001B A1[7400]                mov ax,[num1+12]
+    16 0000001E 8B0E[7C00]              mov cx,[num2+12]
+    17 00000022 01C8                    add ax,cx
+    18 00000024 A3[8400]                mov [result+12],ax
+    19                                  
+    20 00000027 A1[7600]                mov ax,[num1+14]
+    21 0000002A 8B0E[7E00]              mov cx,[num2+14]
+    22 0000002E 01C8                    add ax,cx
+    23 00000030 A3[8600]                mov [result+14],ax
+    24                                  
+    25 00000033 A1[6800]                mov ax,[num1+0]
+    26 00000036 8B0E[7000]              mov cx,[num2+0]
+    27 0000003A 01C8                    add ax,cx
+    28 0000003C A3[7800]                mov [result+0],ax
+    29                                  
+    30 0000003F A1[6A00]                mov ax,[num1+2]
+    31 00000042 8B0E[7200]              mov cx,[num2+2]
+    32 00000046 01C8                    add ax,cx
+    33 00000048 A3[7A00]                mov [result+2],ax
+    34                                  
+    35 0000004B A1[6C00]                mov ax,[num1+4]
+    36 0000004E 8B0E[7400]              mov cx,[num2+4]
+    37 00000052 01C8                    add ax,cx
+    38 00000054 A3[7C00]                mov [result+4],ax
+    39                                  
+    40 00000057 A1[6E00]                mov ax,[num1+6]
+    41 0000005A 8B0E[7600]              mov cx,[num2+6]
+    42 0000005E 01C8                    add ax,cx
+    43 00000060 A3[7E00]                mov [result+6],ax
+    44                                  
+    45 00000063 B84C00                  mov ax,4ch
+    46 00000066 CD21                    int 21h
+    47                                  
+    48 00000068 1111111111111111        num1:dd 0x11111111,0x11111111
+    49 00000070 1111111111111111        num2:dd 0x11111111,0x11111111
+    50 00000078 00000000                result:dd 0x00000000

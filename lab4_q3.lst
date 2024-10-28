@@ -1,0 +1,26 @@
+     1                                  [org 100h]
+     2                                  
+     3 00000000 F8                      clc               ; Clear carry flag
+     4 00000001 BB0000                  mov bx, 0         ; Initialize bx to point to the start of the data
+     5                                  
+     6                                  loop_start:
+     7 00000004 8B87[2400]                  mov ax, [data+bx]   ; Load word from [data+bx] into AX
+     8                                  
+     9                                      ; Swap nibbles in the lower byte
+    10 00000008 89C1                        mov cx, ax          ; Copy AX to CX
+    11 0000000A 25F0F0                      and ax, 0F0F0h      ; Mask to isolate upper nibbles in both bytes
+    12 0000000D C1E804                      shr ax, 4           ; Shift the upper nibbles to the lower nibble positions
+    13 00000010 81E10F0F                    and cx, 0F0Fh       ; Mask to isolate lower nibbles in both bytes
+    14 00000014 C1E104                      shl cx, 4           ; Shift the lower nibbles to the upper nibble positions
+    15 00000017 09C8                        or ax, cx           ; Combine the results to get swapped nibbles
+    16                                  
+    17 00000019 8987[2400]                  mov [data+bx], ax   ; Store the modified AX back into [data+bx]
+    18                                  
+    19 0000001D EB00                        jmp exit      ; If bx is not 8, jump back to loop_start
+    20                                  
+    21                                  exit:
+    22 0000001F B8004C                      mov ax, 4C00h       ; Terminate program with DOS interrupt
+    23 00000022 CD21                        int 21h
+    24                                  
+    25                                  data:
+    26 00000024 5930                        dw 3059h

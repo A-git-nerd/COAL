@@ -1,0 +1,21 @@
+     1                                  [org 100h]
+     2                                  
+     3 00000000 EB06                    jmp start
+     4 00000002 0201                    num1:dw 0x0102
+     5 00000004 0000                    quotient:dw 0x00
+     6 00000006 0000                    reminder:dw 0x00
+     7                                  start:
+     8 00000008 A1[0200]                mov ax,[num1]
+     9                                  
+    10                                  finding:
+    11 0000000B 83F80A                  cmp ax,0xA
+    12 0000000E 7C09                    jl end
+    13                                  
+    14 00000010 83E80A                  sub ax,0xA
+    15 00000013 FF06[0400]              inc word[quotient]
+    16 00000017 EBF2                    jmp finding
+    17                                  
+    18                                  end:
+    19 00000019 A3[0600]                mov [reminder],ax
+    20 0000001C B84C00                  mov ax,4ch
+    21 0000001F CD21                    int 21h

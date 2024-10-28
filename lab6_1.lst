@@ -1,0 +1,51 @@
+     1                                  [org 0x100]
+     2 00000000 EB1B                    jmp start
+     3                                  Subtract:
+     4 00000002 55                      push bp
+     5 00000003 89E5                    mov bp,sp
+     6 00000005 56                      push si
+     7 00000006 8B460A                  mov ax,[bp+10]
+     8 00000009 8B5E08                  mov bx,[bp+8]
+     9 0000000C 29D8                    sub ax,bx
+    10                                  
+    11 0000000E 8B5E06                  mov bx,[bp+6]
+    12 00000011 29D8                    sub ax,bx
+    13                                  
+    14 00000013 8B5E04                  mov bx,[bp+4]
+    15 00000016 29D8                    sub ax,bx
+    16                                  
+    17 00000018 5E                      pop si
+    18 00000019 5D                      pop bp
+    19                                  
+    20 0000001A C20800                  ret 8
+    21                                  
+    22                                  
+    23                                  start:
+    24 0000001D 83EC02                  sub sp,2
+    25                                  ; function call Test i
+    26 00000020 6A0A                    push 0xA
+    27 00000022 6A01                    Push 0x1
+    28 00000024 6A02                    Push 0x2
+    29 00000026 6A02                    Push 0x2
+    30 00000028 E8D7FF                  Call Subtract
+    31 0000002B 5B                      pop bx
+    32                                  
+    33                                  ; function call Test ii
+    34 0000002C 6A09                    push 0x9
+    35 0000002E 6A01                    Push 0x1
+    36 00000030 6A05                    Push 0x5
+    37 00000032 6A00                    Push 0x0
+    38 00000034 E8CBFF                  Call Subtract
+    39 00000037 5B                      pop bx
+    40                                  
+    41                                  ; function call Test iii
+    42 00000038 6A0F                    push 0xF
+    43 0000003A 6A01                    Push 0x1
+    44 0000003C 6A08                    Push 0x8
+    45 0000003E 6A04                    Push 0x4
+    46 00000040 E8BFFF                  Call Subtract
+    47 00000043 5B                      pop bx
+    48                                  
+    49                                  end:
+    50 00000044 B8004C                  mov ax,0x4c00
+    51 00000047 CD21                    int 0x21

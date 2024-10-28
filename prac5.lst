@@ -1,0 +1,32 @@
+     1                                  [org 100h]
+     2 00000000 EB17                    jmp start
+     3                                  
+     4                                  sum:
+     5 00000002 55                      push bp
+     6 00000003 89E5                    mov bp,sp
+     7                                  
+     8 00000005 8B4606                  mov ax,[bp+6]
+     9 00000008 8B5E04                  mov bx,[bp+4]
+    10 0000000B 01D8                    add ax,bx
+    11                                  
+    12 0000000D 8946FE                  mov [bp-2],ax
+    13                                  
+    14 00000010 894608                  mov [bp+8],ax
+    15                                  
+    16 00000013 89EC                    mov sp,bp
+    17 00000015 5D                      pop bp
+    18 00000016 C20400                  ret 4
+    19                                  
+    20                                  start:
+    21 00000019 B80500                  mov ax,5
+    22 0000001C BB0300                  mov bx,3
+    23                                  
+    24 0000001F 83EC02                  sub sp,2
+    25 00000022 53                      push bx
+    26 00000023 50                      push ax
+    27                                  
+    28 00000024 E8DBFF                  call sum 
+    29 00000027 5A                      pop dx
+    30                                  
+    31 00000028 B84C00                  mov ax , 4ch
+    32 0000002B CD21                    int 21h

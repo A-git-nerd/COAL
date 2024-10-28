@@ -1,0 +1,26 @@
+     1                                  [org 100h]
+     2 00000000 EB10                    jmp start
+     3                                  
+     4 00000002 4D7568616D6D61645F-     message:db 'Muhammad_Ahmad'
+     4 0000000B 41686D6164         
+     5 00000010 0E00                    size:dw  14
+     6                                  
+     7                                  start:
+     8 00000012 B800B8                  mov ax,0xb800
+     9 00000015 8EC0                    mov es,ax
+    10 00000017 BF0000                  mov di,0
+    11 0000001A BE0000                  mov si,0
+    12                                  
+    13                                  l2:
+    14                                  
+    15 0000001D B487                    mov ah,0x87
+    16 0000001F 8A84[0200]              mov al,[message+si]
+    17 00000023 268905                  mov word [es:di],ax
+    18 00000026 81C7C800                add di,200
+    19 0000002A 83C601                  add si,1
+    20 0000002D FF0E[1000]              dec word[size]
+    21 00000031 833E[1000]00            cmp word[size],0
+    22 00000036 75E5                    jne l2
+    23                                  
+    24 00000038 B84C00                  mov ax,4ch
+    25 0000003B CD21                    int 21h

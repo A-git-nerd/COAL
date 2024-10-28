@@ -1,0 +1,55 @@
+     1                                  [org 100h]
+     2                                  
+     3 00000000 EB12                    jmp start
+     4                                  
+     5                                  ;Data
+     6 00000002 9999                    plainText: dw 0x9999
+     7 00000004 0000                    plainOut: dw 0x0000
+     8                                  
+     9 00000006 9426                    CipherKey: dw 0x2694
+    10 00000008 0000                    CipherText: dw 0x0000
+    11                                  
+    12                                  ; Encryption:
+    13 0000000A 0000                    E_odd: dw 0
+    14 0000000C 0000                    E_even: dw 0
+    15 0000000E 0000                    E: dw 0
+    16 00000010 0000                    D_odd: dw 0
+    17 00000012 0000                    D_even: dw 0
+    18                                  start:
+    19                                     
+    20 00000014 A1[0200]                    mov ax, [plainText]
+    21 00000017 3306[0600]                  xor ax, [CipherKey]   ; E = PlainText ^ CipherKey
+    22 0000001B A3[0E00]                    mov [E], ax           ; Store encrypted value E
+    23                                  
+    24                                     
+    25 0000001E A1[0E00]                    mov ax, [E]
+    26 00000021 25AAAA                      and ax, 0xAAAA        ; Mask to extract odd bits
+    27 00000024 A3[0A00]                    mov [E_odd], ax       ; Store odd bits
+    28                                  
+    29 00000027 A1[0E00]                    mov ax, [E]
+    30 0000002A 255555                      and ax, 0x5555        ; Mask to extract even bits
+    31 0000002D A3[0C00]                    mov [E_even], ax      ; Store even bits
+    32                                  
+    33 00000030 A1[0A00]                    mov ax, [E_odd]
+    34 00000033 8B1E[0C00]                  mov bx, [E_even]
+    35 00000037 09D8                        or ax, bx             ; Combine odd and even bits to get CipherText
+    36 00000039 A3[0800]                    mov [CipherText], ax  ; Store CipherText
+    37                                  
+    38                                      ; Decryption
+    39 0000003C A1[0800]                    mov ax, [CipherText]
+    40 0000003F 25AAAA                      and ax, 0xAAAA        ; Extract odd bits
+    41 00000042 A3[1000]                    mov [D_odd], ax       ; Store odd bits
+    42                                  
+    43 00000045 A1[0800]                    mov ax, [CipherText]
+    44 00000048 255555                      and ax, 0x5555        ; Extract even bits
+    45 0000004B A3[1200]                    mov [D_even], ax      ; Store even bits
+    46                                  
+    47 0000004E A1[1000]                    mov ax, [D_odd]
+    48 00000051 8B1E[1200]                  mov bx, [D_even]
+    49 00000055 09D8                        or ax, bx             ; Combine odd and even bits to get decrypted value D
+    50 00000057 3306[0600]                  xor ax, [CipherKey]   ; Decrypt: D = CipherText ^ CipherKey
+    51 0000005B A3[0400]                    mov [plainOut], ax    ; Store decrypted plaintext
+    52                                  
+    53                                      ; Exit
+    54 0000005E B8004C                      mov ax, 4C00h
+    55 00000061 CD21                        int 21h

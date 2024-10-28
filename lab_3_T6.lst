@@ -1,0 +1,42 @@
+     1                                  [org 0x0100]
+     2                                  
+     3 00000000 BE0200                  mov si, 2                        ; Start from the second element (index 1, so 2 bytes)
+     4                                  outerloop:
+     5 00000003 3B36[5200]                  cmp si, [size]                ; Compare current index with size
+     6 00000007 7D30                        jge done                      ; If si >= size, sorting is done
+     7                                  
+     8 00000009 8B84[3E00]                  mov ax, [arr + si]            ; Load the current element to be inserted (key)
+     9 0000000D A3[5400]                    mov [key], ax                 ; Store the key in the 'key' variable
+    10 00000010 89F7                        mov di, si                    ; Initialize di to the current index
+    11 00000012 83EF02                      sub di, 2                     ; Move back to the previous element
+    12                                  
+    13                                  innerloop:
+    14 00000015 83FF00                      cmp di, 0                     ; If di < 0, break out of the inner loop
+    15 00000018 7C13                        jl outofinnerloop
+    16                                  
+    17 0000001A 8B85[3E00]                  mov ax, [arr + di]            ; Load the element at arr[di]
+    18 0000001E 3B06[5400]                  cmp ax, [key]                 ; Compare arr[di] with key
+    19 00000022 7E09                        jle outofinnerloop            ; If arr[di] <= key, break out of inner loop
+    20                                  
+    21 00000024 8985[4000]                  mov [arr + di + 2], ax        ; Shift arr[di] to the right
+    22 00000028 83EF02                      sub di, 2                     ; Move to the previous element
+    23 0000002B EBE8                        jmp innerloop                 ; Repeat inner loop
+    24                                  
+    25                                  outofinnerloop:
+    26 0000002D A1[5400]                    mov ax, [key]                 ; Load the key
+    27 00000030 8985[4000]                  mov [arr + di + 2], ax        ; Place the key in its correct position
+    28                                  
+    29 00000034 83C602                      add si, 2                     ; Move to the next element in the outer loop
+    30 00000037 EBCA                        jmp outerloop                 ; Repeat outer loop
+    31                                  
+    32                                  done:
+    33 00000039 B8004C                      mov ax, 0x4c00                ; Exit program
+    34 0000003C CD21                        int 0x21
+    35                                  
+    36                                  ;declaration
+    37 0000003E 050003000800060002-     arr:  dw 5, 3, 8, 6, 2, 7, 4, 10, 1, 9  ; The array to be sorted
+    37 00000047 00070004000A000100-
+    37 00000050 0900               
+    38 00000052 1400                    size: dw 20                             ; Size of the array (20 bytes = 10 elements * 2 bytes each)
+    39 00000054 0000                    key:  dw 0                               ; Temporary storage for the key
+    40                                  

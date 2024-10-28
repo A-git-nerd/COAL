@@ -1,0 +1,87 @@
+     1                                  [org 100h]
+     2                                  
+     3 00000000 EB18                    jmp start
+     4                                  
+     5 00000002 4920616D2061207374-     str1: db 'I am a student of coal', 0  
+     5 0000000B 7564656E74206F6620-
+     5 00000014 636F616C00         
+     6 00000019 01                      row: db 1                            ; Start at row 1 ;use to increament lines
+     7                                  
+     8                                  start:
+     9                                  
+    10                                  ; Clear screen
+    11                                  clr:
+    12 0000001A 50                      push ax
+    13 0000001B 06                      push es
+    14 0000001C 57                      push di
+    15 0000001D 51                      push cx
+    16 0000001E B800B8                  mov ax,0xB800
+    17 00000021 8EC0                    mov es,ax
+    18 00000023 BF0000                  mov di,0
+    19 00000026 B9D007                  mov cx,2000
+    20                                  cls:
+    21 00000029 26C7052007              mov word[es:di],0x0720               
+    22 0000002E 83C702                  add di,2
+    23 00000031 E2F6                    loop cls
+    24 00000033 59                      pop cx
+    25 00000034 5F                      pop di
+    26 00000035 07                      pop es
+    27 00000036 58                      pop ax
+    28                                  
+    29                                  
+    30                                  
+    31                                  
+    32 00000037 50                      push ax
+    33 00000038 06                      push es
+    34 00000039 57                      push di
+    35 0000003A 50                      push ax
+    36                                  
+    37                                  
+    38 0000003B B800B8                  mov ax, 0xb800
+    39 0000003E 8EC0                    mov es, ax
+    40 00000040 BF0000                  mov di, 0                          
+    41                                  
+    42                                  ; Print each word from the string
+    43 00000043 BE[0200]                mov si, str1                       ; SI points to the start of the input string
+    44 00000046 B407                    mov ah, 0x07                       ; Attribute byte for white text
+    45 00000048 FC                      cld                                ; Clear direction flag to move forward through the string
+    46                                  
+    47                                  print_loop:
+    48 00000049 AC                      lodsb                              ; Load the next character from the string into AL
+    49 0000004A 3C00                    cmp al, 0                          ; Check if we've reached the null terminator
+    50 0000004C 742B                    je done                            ; If null terminator, we're done
+    51                                  
+    52 0000004E 3C20                    cmp al, ' '                        ; Check if the current character is a space
+    53 00000050 740C                    je new_line                        ; If it's a space, move to the next line
+    54                                  
+    55                                  ; Store the character and attribute in video memory
+    56 00000052 268805                  mov [es:di], al                    ; Store the character in video memory
+    57 00000055 26886501                mov [es:di+1], ah                  ; Store the attribute (white text)
+    58 00000059 83C702                  add di, 2                          ; Move to the next screen position
+    59 0000005C EBEB                    jmp print_loop                     ; Repeat for the next character
+    60                                  
+    61                                  new_line:
+    62                                  
+    63                                      ;used to increament di using row , reg are preserved
+    64 0000005E 50                      push ax
+    65 0000005F 53                      push bx
+    66 00000060 BF0000                  mov di,0                           ; Reset di to start at the beginning of the new line
+    67 00000063 A1[1900]                mov ax, [row]                      ; Get the current row
+    68 00000066 BBA000                  mov bx, 160                        ; Each row in video memory is 160 bytes
+    69 00000069 F7E3                    mul bx                             ; Calculate the starting position for the new line
+    70 0000006B 01C7                    add di, ax                         ; Adjust DI to point to the new line
+    71 0000006D FE06[1900]              inc byte [row]                     ; Increment the row number
+    72 00000071 5B                      pop bx
+    73 00000072 58                      pop ax
+    74 00000073 EBD4                    jmp print_loop                     ; Continue printing the next word
+    75                                  
+    76                                  
+    77 00000075 58                      pop ax
+    78 00000076 07                      pop es
+    79 00000077 5F                      pop di
+    80 00000078 58                      pop ax
+    81                                  
+    82                                  done:
+    83                                  ; End the program
+    84 00000079 B8004C                  mov ax, 4C00h
+    85 0000007C CD21                    int 21h
