@@ -1,0 +1,81 @@
+     1                                  [org 0x0100]
+     2                                  
+     3 00000000 EB35                    jmp start 
+     4                                  
+     5                                  delay:
+     6 00000002 51                          push cx
+     7 00000003 B95000                      mov cx, 80              ; Outer loop count (adjust to increase/decrease delay)
+     8                                  delay_loop1:
+     9 00000006 51                          push cx
+    10 00000007 B9FFFF                      mov cx, 0xFFFF         ; Inner loop count (adjust to increase/decrease delay)
+    11                                  delay_loop2:
+    12 0000000A E2FE                        loop delay_loop2
+    13 0000000C 59                          pop cx
+    14 0000000D E2F7                        loop delay_loop1
+    15 0000000F 59                          pop cx
+    16 00000010 C3                          ret
+    17                                  
+    18                                  
+    19                                  ;;;;Function
+    20                                  clear_screen:
+    21                                  ;flag pushed to check interrupt flag
+    22 00000011 9C                      pushf
+    23 00000012 58                      pop ax
+    24 00000013 250003                  and ax,0x0300
+    25 00000016 741E                    jz interruptCalled
+    26                                  
+    27 00000018 FC                          cld                    ; Clear the direction flag
+    28                                      ; Set video segment and attributes for clearing screen
+    29 00000019 B800B8                      mov ax, 0xB800         
+    30 0000001C 8EC0                        mov es, ax
+    31 0000001E BF0000                      mov di, 0              
+    32 00000021 B82007                      mov ax, 0x0720         
+    33 00000024 B9D007                      mov cx, 2000           
+    34 00000027 F3AB                        rep stosw              
+    35                                  
+    36                                      ; Detect whether near or far call
+    37                                  	
+    38                                  	;if it was near call stack has ret and garbage(not required)
+    39                                  	;if it was far call stack has ret and cs
+    40                                  	
+    41                                  	;if near call
+    42                                  	;ax will get ret
+    43                                  	;dx will get either cs or garbage if dx==cs then it was far call else near call
+    44 00000029 58                          pop ax                 
+    45 0000002A 5A                          pop dx                
+    46 0000002B 8CCB                        mov bx, cs             
+    47 0000002D 39DA                        cmp dx, bx             
+    48 0000002F 7503                        jne near_return        
+    49                                  
+    50                                  far_return:
+    51 00000031 52                          push dx                ; Push the segment back for far return
+    52 00000032 50                          push ax                ; Push the offset back for far return
+    53 00000033 CB                          retf                   ; Far return
+    54                                  
+    55                                  near_return:
+    56 00000034 50                          push ax                ; Push offset back onto the stack for near return
+    57 00000035 C3                          ret                    ; Near return
+    58                                  
+    59                                  interruptCalled:
+    60 00000036 CF                      iret
+    61                                  ; Main Program
+    62                                  start:
+    63                                  
+    64 00000037 FA                          cli                    ; Disable interrupts temporarily
+    65 00000038 31C0                        xor ax, ax             ; Set AX to 0
+    66 0000003A 8EC0                        mov es, ax             ; Set ES to 0, pointing to the IVT
+    67                                  
+    68                                      ; Install our screen-clear function at INT 0x80
+    69 0000003C 268C0E0202                  mov word [es:0x80 * 4 + 2], cs ; Set segment of ISR in IVT
+    70 00000041 26C7060002[1100]            mov word [es:0x80 * 4], clear_screen     ; Set offset in the IVT
+    71                                  
+    72 00000048 FB                          sti                    ; Re-enable interrupts
+    73                                      
+    74 00000049 E8C5FF                  	call clear_screen  ;near call 
+    75                                  
+    76 0000004C 9A[1100]F519                call 0x19F5:clear_screen     ;far call  
+    77                                   
+    78 00000051 CD80                        int 0x80               
+    79                                  	
+    80 00000053 B8004C                      mov ax, 0x4C00
+    81 00000056 CD21                        int 0x21

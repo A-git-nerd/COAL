@@ -1,0 +1,109 @@
+     1                                  [org 100h]
+     2 00000000 EB5E                    jmp TakingKey
+     3                                  
+     4 00000002 456E74657220612063-     message: db 'Enter a character: ', 0
+     4 0000000B 68617261637465723A-
+     4 00000014 2000               
+     5                                  ;to store the key character
+     6 00000016 00                      key: db 0                  
+     7 00000017 00                      size: db 0
+     8                                  
+     9                                  clrSrc:
+    10 00000018 50                          push ax
+    11 00000019 06                          push es
+    12 0000001A 57                          push di
+    13 0000001B 51                          push cx
+    14 0000001C B800B8                      mov ax, 0xb800
+    15 0000001F 8EC0                        mov es, ax
+    16 00000021 BF0000                      mov di, 0
+    17 00000024 B82007                      mov ax, 0x0720
+    18 00000027 B9D007                      mov cx, 2000
+    19 0000002A F3AB                        rep stosw
+    20 0000002C 59                          pop cx
+    21 0000002D 5F                          pop di
+    22 0000002E 07                          pop es
+    23 0000002F 58                          pop ax
+    24 00000030 C3                          ret
+    25                                  
+    26                                  ; Calculate the length of the message
+    27                                  strlen:
+    28 00000031 60                          pusha
+    29 00000032 1E                          push ds
+    30 00000033 07                          pop es
+    31 00000034 BF[0200]                    mov di, message
+    32 00000037 B000                        mov al, 0
+    33 00000039 B9FFFF                      mov cx, 0xFFFF
+    34 0000003C F2AE                        repne scasb
+    35 0000003E B8FFFF                      mov ax, 0xFFFF
+    36 00000041 29C8                        sub ax, cx
+    37 00000043 48                          dec ax
+    38 00000044 A3[1700]                    mov [size], ax
+    39 00000047 61                          popa
+    40 00000048 C3                          ret
+    41                                  
+    42                                  ; Print the message string on screen
+    43                                  printstr:
+    44 00000049 B413                        mov ah, 0x13
+    45 0000004B B001                        mov al, 1
+    46 0000004D B700                        mov bh, 0
+    47 0000004F B307                        mov bl, 0x07
+    48 00000051 BA0000                      mov dx, 0x0000
+    49 00000054 8B0E[1700]                  mov cx, [size]
+    50 00000058 0E                          push cs
+    51 00000059 07                          pop es
+    52 0000005A BD[0200]                    mov bp, message
+    53 0000005D CD10                        int 10h
+    54 0000005F C3                          ret
+    55                                  
+    56                                  TakingKey:
+    57 00000060 E8B5FF                      call clrSrc
+    58 00000063 E8CBFF                      call strlen
+    59 00000066 E8E0FF                      call printstr
+    60                                  
+    61                                      ; Taking the key input
+    62 00000069 B408                        mov ah, 08h            ; service to take key
+    63 0000006B CD21                        int 21h
+    64 0000006D A2[1600]                    mov [key], al          ; store the key character
+    65                                  
+    66                                      ; Display the character entered
+    67 00000070 B40E                        mov ah, 0x0E
+    68 00000072 A0[1600]                    mov al, [key]
+    69 00000075 CD10                        int 10h
+    70                                  
+    71                                      ; Prepare to display ASCII value
+    72 00000077 0FB606[1600]                movzx ax, byte [key]   
+    73 0000007C E80500                      call PrintDecimal      ; Convert and print decimal value
+    74                                  
+    75                                      ; Exit program
+    76 0000007F B8004C                      mov ax, 4c00h
+    77 00000082 CD21                        int 21h
+    78                                  
+    79                                  ; Routine to print a decimal number in AX
+    80                                  PrintDecimal:
+    81 00000084 60                          pusha
+    82 00000085 B90A00                      mov cx, 10             ; Base 10 for decimal
+    83 00000088 BB0000                      mov bx, 0              ; Clear BX for digit storage
+    84                                  
+    85                                  ;dividing the number by base 10 till quotient becomes 0
+    86                                  print_digits:
+    87 0000008B 31D2                        xor dx, dx             ; Clear DX for DIV
+    88 0000008D F7F1                        div cx                 ; Divide AX by 10, remainder in DX
+    89 0000008F 80C230                      add dl, '0'            ; Convert remainder to ASCII character
+    90                                  	;pushed lsb bits
+    91 00000092 52                          push dx                ; Store digit on stack
+    92 00000093 43                          inc bx                 ; Count number of digits
+    93 00000094 09C0                        or ax, ax              ; Check if quotient is zero
+    94 00000096 75F3                        jnz print_digits       ; Repeat if more digits
+    95                                  
+    96                                  print_stack_digits:
+    97                                  ;poped msb bits that's why stack is use
+    98 00000098 5A                          pop dx                 ; Get the digit from the stack
+    99                                      
+   100                                  	;printing the decimal value that was push in stack earlier  
+   101 00000099 B40E                    	mov ah, 0x0E           ; BIOS teletype output
+   102 0000009B 88D0                        mov al, dl             ; Load digit to AL
+   103 0000009D CD10                        int 10h                ; Print the digit
+   104 0000009F 4B                          dec bx                 ; Decrement digit counter
+   105 000000A0 75F6                        jnz print_stack_digits ; Repeat until all digits are printed
+   106 000000A2 61                          popa
+   107 000000A3 C3                          ret

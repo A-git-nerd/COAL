@@ -1,0 +1,78 @@
+     1                                  [org 100h]
+     2 00000000 EB2F                    jmp start
+     3                                  
+     4 00000002 20                      s:db' '
+     5                                  
+     6                                  setup:
+     7 00000003 B413                    mov ah,0x13
+     8 00000005 B001                    mov al,1
+     9                                  
+    10 00000007 B700                    mov bh,0
+    11 00000009 B307                    mov bl,0x07
+    12                                  
+    13 0000000B B90100                  mov cx,1
+    14 0000000E 0E                      push cs
+    15 0000000F 07                      pop es
+    16 00000010 BA0000                  mov dx,0x000
+    17 00000013 BD[0200]                mov bp,s
+    18 00000016 CD10                    int 10h
+    19                                  
+    20                                  clrSrc:
+    21 00000018 50                          push ax
+    22 00000019 06                          push es
+    23 0000001A 57                          push di
+    24 0000001B 51                          push cx
+    25 0000001C B800B8                      mov ax, 0xb800
+    26 0000001F 8EC0                        mov es, ax
+    27 00000021 BF0000                      mov di, 0
+    28 00000024 B82007                      mov ax, 0x0720
+    29 00000027 B9D007                      mov cx, 2000
+    30 0000002A F3AB                        rep stosw
+    31 0000002C 59                          pop cx
+    32 0000002D 5F                          pop di
+    33 0000002E 07                          pop es
+    34 0000002F 58                          pop ax
+    35 00000030 C3                          ret
+    36                                  
+    37                                  start:
+    38 00000031 E8E4FF                      call clrSrc  
+    39 00000034 E8CCFF                  call setup	
+    40                                  
+    41                                  main_loop:
+    42                                      ; Display prompt to user
+    43 00000037 B40E                        mov ah, 0x0E
+    44 00000039 B03E                        mov al, '>'            ; Display '>'
+    45 0000003B CD10                        int 0x10
+    46 0000003D B020                        mov al, ' '            ; Display a space
+    47 0000003F CD10                        int 0x10
+    48                                  
+    49                                      ; Read a character from the keyboard
+    50 00000041 B401                        mov ah, 01h            ; DOS function to check and get a key (with echo)
+    51 00000043 CD21                        int 21h
+    52 00000045 88C3                        mov bl, al             
+    53                                  
+    54                                      ; Check if the character is lowercase (between 'a' and 'z')
+    55 00000047 3C61                        cmp al, 'a'            ; Compare AL with 'a'
+    56 00000049 7206                        jb skip_conversion     ; If AL < 'a', skip to display character
+    57 0000004B 3C7A                        cmp al, 'z'            ; Compare AL with 'z'
+    58 0000004D 7702                        ja skip_conversion     ; If AL > 'z', skip to display character
+    59                                  
+    60                                      ; Convert lowercase to uppercase by subtracting 0x20
+    61 0000004F 2C20                        sub al, 0x20           ; Convert to uppercase
+    62                                  
+    63                                  skip_conversion:
+    64                                      ; Display the character
+    65 00000051 B402                        mov ah, 02h            ; DOS function to display character
+    66 00000053 88C2                        mov dl, al             ; Move character to DL for display
+    67 00000055 CD21                        int 21h
+    68                                  
+    69                                      ; Check if the original character was 'qQ' (quit condition)
+    70 00000057 80FB71                      cmp bl, 'q'            ; Compare BL with 'q or Q'
+    71 0000005A 7402                        je end_program         ; If equal, exit the program
+    72                                  
+    73                                   
+    74 0000005C EBD9                        jmp main_loop
+    75                                  
+    76                                  end_program:
+    77 0000005E B44C                        mov ah, 4Ch            
+    78 00000060 CD21                        int 21h

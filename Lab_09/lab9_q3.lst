@@ -1,0 +1,102 @@
+     1                                  [org 100h]
+     2 00000000 EB6D                    jmp start
+     3 00000002 4D79206E616D652069-     msg1: db 'My name is',0
+     3 0000000B 7300               
+     4 0000000D 4920616D20696E2063-     msg2: db 'I am in coal lab',0
+     4 00000016 6F616C206C616200   
+     5 0000001E 4C6561726E696E6720-     msg3: db 'Learning assembly language',0
+     5 00000027 617373656D626C7920-
+     5 00000030 6C616E677561676500 
+     6                                  
+     7                                  strlen1:
+     8 00000039 B9FFFF                  mov cx,0xFFFF
+     9 0000003C B000                    mov al,0
+    10 0000003E BF[0200]                mov di,msg1
+    11 00000041 1E                      push ds
+    12 00000042 07                      pop es
+    13 00000043 F2AE                    repne scasb
+    14 00000045 B8FFFF                  mov ax,0xFFFF
+    15 00000048 29C8                    sub ax,cx
+    16 0000004A C3                      ret
+    17                                  
+    18                                  
+    19                                  strlen2:
+    20 0000004B B9FFFF                  mov cx,0xFFFF
+    21 0000004E B000                    mov al,0
+    22 00000050 BF[0D00]                mov di,msg2
+    23 00000053 1E                      push ds
+    24 00000054 07                      pop es
+    25 00000055 F2AE                    repne scasb
+    26 00000057 B8FFFF                  mov ax,0xFFFF
+    27 0000005A 29C8                    sub ax,cx
+    28 0000005C C3                      ret
+    29                                  
+    30                                  
+    31                                  strlen3:
+    32 0000005D B9FFFF                  mov cx,0xFFFF
+    33 00000060 B000                    mov al,0
+    34 00000062 BF[1E00]                mov di,msg3
+    35 00000065 1E                      push ds
+    36 00000066 07                      pop es
+    37 00000067 F2AE                    repne scasb
+    38 00000069 B8FFFF                  mov ax,0xFFFF
+    39 0000006C 29C8                    sub ax,cx
+    40 0000006E C3                      ret
+    41                                  
+    42                                  
+    43                                  start:
+    44                                  clrSrc:
+    45 0000006F B800B8                  mov ax,0xb800
+    46 00000072 8EC0                    mov es,ax
+    47 00000074 BF0000                  mov di,0
+    48 00000077 B82007                  mov ax,0x0720
+    49 0000007A B9D007                  mov cx,2000
+    50 0000007D F3AB                    rep stosw
+    51                                  
+    52                                  print:
+    53                                  
+    54 0000007F E8B7FF                  call strlen1
+    55 00000082 89C1                    mov cx,ax
+    56                                  
+    57 00000084 B413                    mov ah,13h
+    58 00000086 B001                    mov al,1
+    59                                  
+    60 00000088 B700                    mov bh,0
+    61 0000008A B307                    mov bl,0x07
+    62                                  
+    63 0000008C BA0000                  mov dx,0x0000
+    64                                  
+    65 0000008F BD[0200]                mov bp,msg1
+    66 00000092 CD10                    int 10h
+    67                                  
+    68                                  
+    69 00000094 E8B4FF                  call strlen2
+    70 00000097 89C1                    mov cx,ax
+    71                                  
+    72 00000099 B413                    mov ah,13h
+    73 0000009B B001                    mov al,1
+    74                                  
+    75 0000009D B700                    mov bh,0
+    76 0000009F B307                    mov bl,0x07
+    77                                  
+    78 000000A1 BA0001                  mov dx,0x0100
+    79 000000A4 BD[0D00]                mov bp,msg2
+    80                                  
+    81 000000A7 CD10                    int 10h
+    82                                  
+    83 000000A9 E8B1FF                  call strlen3
+    84 000000AC 89C1                    mov cx,ax
+    85                                  
+    86 000000AE B413                    mov ah,13h
+    87 000000B0 B001                    mov al,1
+    88                                  
+    89 000000B2 B700                    mov bh,0
+    90 000000B4 B307                    mov bl,0x07
+    91                                  
+    92 000000B6 BA0002                  mov dx,0x0200
+    93 000000B9 BD[1E00]                mov bp,msg3
+    94                                  
+    95 000000BC CD10                    int 10h
+    96                                  
+    97 000000BE B84C00                  mov ax,4ch
+    98 000000C1 CD21                    int 21h
